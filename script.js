@@ -75,11 +75,57 @@ upgradeAutomaticButton.addEventListener('click', () => {
 setInterval(() => {
     cash += cashPerSecond;
     scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
-    saveGame(); // Save game data on each interval
+    saveGame(); // Save game data every second
 }, 1000);
 
-// Call loadGame() when the page loads
-window.addEventListener('load', loadGame);
+// Reset Progress functionality
+document.getElementById('resetProgressButton').addEventListener('click', () => {
+    cash = 0.00;
+    cashPerClick = 0.50;
+    cashPerSecond = 0.25;
+    clickUpgradeCost = 10.00;
+    autoUpgradeCost = 10.00;
 
-// Call saveGame() before the user closes the page
-window.addEventListener('beforeunload', saveGame);
+    // Update the UI with reset values
+    scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
+    clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
+    automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
+    upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${clickUpgradeCost.toFixed(2)})`;
+    upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${autoUpgradeCost.toFixed(2)})`;
+    
+    localStorage.clear(); // Clear saved data
+});
+
+// Load the game when the page is loaded
+window.onload = loadGame;
+
+// Settings Popup Logic
+const settingsButton = document.getElementById('settingsButton');
+const settingsPopup = document.getElementById('settingsPopup');
+const overlay = document.getElementById('overlay');
+const closeSettingsPopup = document.getElementById('closeSettingsPopup');
+
+settingsButton.addEventListener('click', () => {
+    settingsPopup.style.display = 'block';
+    overlay.style.display = 'block';
+});
+
+closeSettingsPopup.addEventListener('click', () => {
+    settingsPopup.style.display = 'none';
+    overlay.style.display = 'none';
+});
+
+// Stats Popup Logic
+const statsButton = document.getElementById('statsButton');
+const statsPopup = document.getElementById('statsPopup');
+const closeStatsPopup = document.getElementById('closeStatsPopup');
+
+statsButton.addEventListener('click', () => {
+    statsPopup.style.display = 'block';
+    overlay.style.display = 'block';
+});
+
+closeStatsPopup.addEventListener('click', () => {
+    statsPopup.style.display = 'none';
+    overlay.style.display = 'none';
+});
