@@ -67,101 +67,70 @@ setInterval(() => {
     saveProgress();
 }, 1000);
 
-// Popup handling
-const settingsButton = document.getElementById('settingsButton');
+// Popups functionality
 const overlay = document.getElementById('overlay');
 const settingsPopup = document.getElementById('settingsPopup');
-const closeSettingsPopup = document.getElementById('closeSettingsPopup');
-const loginRegisterButton = document.querySelector('.login-register');
-const statsButton = document.getElementById('statsButton');
-const closeStatsPopup = document.getElementById('closeStatsPopup');
 const statsPopup = document.getElementById('statsPopup');
 
-// Open settings popup
-settingsButton.addEventListener('click', () => {
+// Open Settings Popup
+document.getElementById('settingsButton').addEventListener('click', () => {
     overlay.style.display = 'block';
     settingsPopup.style.display = 'block';
 });
 
-// Close settings popup
-closeSettingsPopup.addEventListener('click', () => {
+// Close Settings Popup
+document.getElementById('closeSettingsPopup').addEventListener('click', () => {
     overlay.style.display = 'none';
     settingsPopup.style.display = 'none';
+    document.getElementById('loginRegisterContainer').style.display = 'none'; // Hide Login/Register container when closing
 });
 
-// Open stats popup
-statsButton.addEventListener('click', () => {
+// Open Stats Popup
+document.getElementById('statsButton').addEventListener('click', () => {
     overlay.style.display = 'block';
     statsPopup.style.display = 'block';
 });
 
-// Close stats popup
-closeStatsPopup.addEventListener('click', () => {
+// Close Stats Popup
+document.getElementById('closeStatsPopup').addEventListener('click', () => {
     overlay.style.display = 'none';
     statsPopup.style.display = 'none';
 });
 
-// Login/Register functionality
-let isLoginTab = true; // Tracks current tab
-const tabContainer = document.createElement('div');
-tabContainer.classList.add('tab-container');
-
-const loginTab = document.createElement('div');
-loginTab.classList.add('tab');
-loginTab.innerText = 'Login';
-loginTab.addEventListener('click', () => {
-    isLoginTab = true;
-    updateTabVisibility();
+// Reset Progress button
+document.getElementById('resetProgressButton').addEventListener('click', () => {
+    cash = 0;
+    cashPerClick = 0.50;
+    cashPerSecond = 0.25;
+    upgradeClickCost = 10.00;
+    upgradeAutomaticCost = 10.00;
+    saveProgress();
+    updateDisplay();
 });
 
-const registerTab = document.createElement('div');
-registerTab.classList.add('tab');
-registerTab.innerText = 'Register';
-registerTab.addEventListener('click', () => {
-    isLoginTab = false;
-    updateTabVisibility();
-});
-
-tabContainer.appendChild(loginTab);
-tabContainer.appendChild(registerTab);
-settingsPopup.appendChild(tabContainer);
-
-// Create form elements
-const form = document.createElement('form');
-form.classList.add('form');
-
-const usernameInput = document.createElement('input');
-usernameInput.type = 'text';
-usernameInput.placeholder = 'Username';
-form.appendChild(usernameInput);
-
-const passwordInput = document.createElement('input');
-passwordInput.type = 'password';
-passwordInput.placeholder = 'Password';
-form.appendChild(passwordInput);
-
-const captchaDiv = document.createElement('div');
-captchaDiv.classList.add('captcha');
-captchaDiv.innerText = 'I am not a robot (CAPTCHA here)';
-form.appendChild(captchaDiv);
-
-// Add the form to the settings popup
-settingsPopup.appendChild(form);
-
-// Function to update the visibility of the tabs
-function updateTabVisibility() {
-    if (isLoginTab) {
-        loginTab.style.backgroundColor = '#007bff'; // Active tab color
-        registerTab.style.backgroundColor = '#0056b3'; // Inactive tab color
-        passwordInput.placeholder = 'Password'; // Login
+// Toggle Login/Register
+document.getElementById('loginRegisterButton').addEventListener('click', () => {
+    const container = document.getElementById('loginRegisterContainer');
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
     } else {
-        registerTab.style.backgroundColor = '#007bff'; // Active tab color
-        loginTab.style.backgroundColor = '#0056b3'; // Inactive tab color
-        passwordInput.placeholder = 'Confirm Password'; // Register
+        container.style.display = 'none';
     }
-}
+});
 
-// Initialize
+// Tab switching for Login/Register
+document.getElementById('loginTab').addEventListener('click', () => {
+    document.getElementById('loginRegisterForm').style.display = 'block';
+    document.getElementById('registerTab').classList.remove('active');
+    document.getElementById('loginTab').classList.add('active');
+});
+
+document.getElementById('registerTab').addEventListener('click', () => {
+    document.getElementById('loginRegisterForm').style.display = 'none';
+    document.getElementById('loginTab').classList.remove('active');
+    document.getElementById('registerTab').classList.add('active');
+});
+
+// Load progress on start
 loadProgress();
 updateDisplay();
-updateTabVisibility();
