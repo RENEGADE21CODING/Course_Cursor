@@ -1,136 +1,132 @@
-// Variables for cash and upgrades
-let cash = 0.00;
+// Initialize variables
+let cash = 0;
 let cashPerClick = 0.50;
 let cashPerSecond = 0.25;
-let upgradeClickCost = 10.00;
-let upgradeAutomaticCost = 10.00;
+let clickCost = 10.00;
+let automaticCost = 10.00;
 
-// Load saved values from local storage
+// Load saved values from localStorage
 function loadProgress() {
-    cash = parseFloat(localStorage.getItem('cash')) || 0;
-    cashPerClick = parseFloat(localStorage.getItem('cashPerClick')) || 0.50;
-    cashPerSecond = parseFloat(localStorage.getItem('cashPerSecond')) || 0.25;
-    upgradeClickCost = parseFloat(localStorage.getItem('upgradeClickCost')) || 10.00;
-    upgradeAutomaticCost = parseFloat(localStorage.getItem('upgradeAutomaticCost')) || 10.00;
+  const savedData = localStorage.getItem('platickerData');
+  if (savedData) {
+    const data = JSON.parse(savedData);
+    cash = data.cash;
+    cashPerClick = data.cashPerClick;
+    cashPerSecond = data.cashPerSecond;
+    clickCost = data.clickCost;
+    automaticCost = data.automaticCost;
+  }
 }
 
-// Save values to local storage
+// Save values to localStorage
 function saveProgress() {
-    localStorage.setItem('cash', cash);
-    localStorage.setItem('cashPerClick', cashPerClick);
-    localStorage.setItem('cashPerSecond', cashPerSecond);
-    localStorage.setItem('upgradeClickCost', upgradeClickCost);
-    localStorage.setItem('upgradeAutomaticCost', upgradeAutomaticCost);
+  const data = {
+    cash,
+    cashPerClick,
+    cashPerSecond,
+    clickCost,
+    automaticCost
+  };
+  localStorage.setItem('platickerData', JSON.stringify(data));
 }
 
-// Update the cash display
+// Update display values
 function updateDisplay() {
-    document.getElementById('scoreDisplay').innerText = `Cash: $${cash.toFixed(2)}`;
-    document.getElementById('clickInfo').innerText = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
-    document.getElementById('automaticInfo').innerText = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
-    document.getElementById('upgradeClickButton').innerText = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
-    document.getElementById('upgradeAutomaticButton').innerText = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
+  document.getElementById('scoreDisplay').innerText = `Cash: $${cash.toFixed(2)}`;
+  document.getElementById('clickInfo').innerText = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
+  document.getElementById('automaticInfo').innerText = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
 }
 
-// Click cash function
-document.getElementById('clickCash').addEventListener('click', () => {
-    cash += cashPerClick;
+// Cash increment on click
+document.getElementById('clickCash').onclick = function() {
+  cash += cashPerClick;
+  updateDisplay();
+  saveProgress();
+};
+
+// Upgrade Cash Per Click
+document.getElementById('upgradeClickButton').onclick = function() {
+  if (cash >= clickCost) {
+    cash -= clickCost;
+    cashPerClick *= 1.10; // Increase by 10%
+    clickCost = Math.round(clickCost * 1.15 * 100) / 100; // Increase cost by 15%
     updateDisplay();
     saveProgress();
-});
+  }
+};
 
-// Upgrade buttons
-document.getElementById('upgradeClickButton').addEventListener('click', () => {
-    if (cash >= upgradeClickCost) {
-        cash -= upgradeClickCost;
-        cashPerClick *= 1.10; // Increase by 10%
-        upgradeClickCost = Math.round(upgradeClickCost * 1.15 * 100) / 100; // Increase cost by 15%
-        updateDisplay();
-        saveProgress();
-    }
-});
-
-document.getElementById('upgradeAutomaticButton').addEventListener('click', () => {
-    if (cash >= upgradeAutomaticCost) {
-        cash -= upgradeAutomaticCost;
-        cashPerSecond *= 1.10; // Increase by 10%
-        upgradeAutomaticCost = Math.round(upgradeAutomaticCost * 1.15 * 100) / 100; // Increase cost by 15%
-        updateDisplay();
-        saveProgress();
-    }
-});
-
-// Automatic cash increment
-setInterval(() => {
-    cash += cashPerSecond;
+// Upgrade Cash Per Second
+document.getElementById('upgradeAutomaticButton').onclick = function() {
+  if (cash >= automaticCost) {
+    cash -= automaticCost;
+    cashPerSecond *= 1.10; // Increase by 10%
+    automaticCost = Math.round(automaticCost * 1.15 * 100) / 100; // Increase cost by 15%
     updateDisplay();
     saveProgress();
+  }
+};
+
+// Reset Progress
+document.getElementById('resetProgressButton').onclick = function() {
+  cash = 0;
+  cashPerClick = 0.50;
+  cashPerSecond = 0.25;
+  clickCost = 10.00;
+  automaticCost = 10.00;
+  saveProgress();
+  updateDisplay();
+};
+
+// Update cash per second every second
+setInterval(function() {
+  cash += cashPerSecond;
+  updateDisplay();
+  saveProgress();
 }, 1000);
 
-// Popups functionality
+// Settings and Stats Popups
 const overlay = document.getElementById('overlay');
 const settingsPopup = document.getElementById('settingsPopup');
 const statsPopup = document.getElementById('statsPopup');
 
-// Open Settings Popup
-document.getElementById('settingsButton').addEventListener('click', () => {
-    overlay.style.display = 'block';
-    settingsPopup.style.display = 'block';
-});
+document.getElementById('settingsButton').onclick = function() {
+  overlay.style.display = 'block';
+  settingsPopup.style.display = 'block';
+};
 
-// Close Settings Popup
-document.getElementById('closeSettingsPopup').addEventListener('click', () => {
-    overlay.style.display = 'none';
-    settingsPopup.style.display = 'none';
-    document.getElementById('loginRegisterContainer').style.display = 'none'; // Hide Login/Register container when closing
-});
+document.getElementById('closeSettingsPopup').onclick = function() {
+  overlay.style.display = 'none';
+  settingsPopup.style.display = 'none';
+};
 
-// Open Stats Popup
-document.getElementById('statsButton').addEventListener('click', () => {
-    overlay.style.display = 'block';
-    statsPopup.style.display = 'block';
-});
+// Stats button
+document.getElementById('statsButton').onclick = function() {
+  overlay.style.display = 'block';
+  statsPopup.style.display = 'block';
+};
 
-// Close Stats Popup
-document.getElementById('closeStatsPopup').addEventListener('click', () => {
-    overlay.style.display = 'none';
-    statsPopup.style.display = 'none';
-});
+document.getElementById('closeStatsPopup').onclick = function() {
+  overlay.style.display = 'none';
+  statsPopup.style.display = 'none';
+};
 
-// Reset Progress button
-document.getElementById('resetProgressButton').addEventListener('click', () => {
-    cash = 0;
-    cashPerClick = 0.50;
-    cashPerSecond = 0.25;
-    upgradeClickCost = 10.00;
-    upgradeAutomaticCost = 10.00;
-    saveProgress();
-    updateDisplay();
-});
+// Login/Register Tab functionality
+document.getElementById('loginRegisterButton').onclick = function() {
+  const tabs = document.getElementById('loginRegisterTabs');
+  tabs.style.display = tabs.style.display === 'block' ? 'none' : 'block';
+};
 
-// Toggle Login/Register
-document.getElementById('loginRegisterButton').addEventListener('click', () => {
-    const container = document.getElementById('loginRegisterContainer');
-    if (container.style.display === 'none') {
-        container.style.display = 'block';
-    } else {
-        container.style.display = 'none';
-    }
-});
+// Tab switching
+document.getElementById('loginTab').onclick = function() {
+  document.getElementById('loginForm').style.display = 'block';
+  document.getElementById('registerForm').style.display = 'none';
+};
 
-// Tab switching for Login/Register
-document.getElementById('loginTab').addEventListener('click', () => {
-    document.getElementById('loginRegisterForm').style.display = 'block';
-    document.getElementById('registerTab').classList.remove('active');
-    document.getElementById('loginTab').classList.add('active');
-});
+document.getElementById('registerTab').onclick = function() {
+  document.getElementById('registerForm').style.display = 'block';
+  document.getElementById('loginForm').style.display = 'none';
+};
 
-document.getElementById('registerTab').addEventListener('click', () => {
-    document.getElementById('loginRegisterForm').style.display = 'none';
-    document.getElementById('loginTab').classList.remove('active');
-    document.getElementById('registerTab').classList.add('active');
-});
-
-// Load progress on start
+// Load initial progress
 loadProgress();
 updateDisplay();
