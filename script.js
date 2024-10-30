@@ -1,20 +1,20 @@
-// Initialize variables
+// Initial Game Variables
 let cash = 0;
-let cashPerClick = 0.50;
+let cashPerClick = 1.00;
 let cashPerSecond = 0.25;
 let clickCost = 10.00;
 let automaticCost = 10.00;
 
-// Load saved values from localStorage
+// Load saved progress from localStorage
 function loadProgress() {
   const savedData = localStorage.getItem('platickerData');
   if (savedData) {
     const data = JSON.parse(savedData);
-    cash = data.cash;
-    cashPerClick = data.cashPerClick;
-    cashPerSecond = data.cashPerSecond;
-    clickCost = data.clickCost;
-    automaticCost = data.automaticCost;
+    cash = data.cash || cash;
+    cashPerClick = data.cashPerClick || cashPerClick;
+    cashPerSecond = data.cashPerSecond || cashPerSecond;
+    clickCost = data.clickCost || clickCost;
+    automaticCost = data.automaticCost || automaticCost;
   }
 }
 
@@ -38,14 +38,14 @@ function updateDisplay() {
 }
 
 // Cash increment on click
-document.getElementById('clickCash').onclick = function() {
+document.getElementById('clickCash').addEventListener('click', function() {
   cash += cashPerClick;
   updateDisplay();
   saveProgress();
-};
+});
 
 // Upgrade Cash Per Click
-document.getElementById('upgradeClickButton').onclick = function() {
+document.getElementById('upgradeClickButton').addEventListener('click', function() {
   if (cash >= clickCost) {
     cash -= clickCost;
     cashPerClick *= 1.10; // Increase by 10%
@@ -53,10 +53,10 @@ document.getElementById('upgradeClickButton').onclick = function() {
     updateDisplay();
     saveProgress();
   }
-};
+});
 
 // Upgrade Cash Per Second
-document.getElementById('upgradeAutomaticButton').onclick = function() {
+document.getElementById('upgradeAutomaticButton').addEventListener('click', function() {
   if (cash >= automaticCost) {
     cash -= automaticCost;
     cashPerSecond *= 1.10; // Increase by 10%
@@ -64,18 +64,18 @@ document.getElementById('upgradeAutomaticButton').onclick = function() {
     updateDisplay();
     saveProgress();
   }
-};
+});
 
 // Reset Progress
-document.getElementById('resetProgressButton').onclick = function() {
+document.getElementById('resetProgressButton').addEventListener('click', function() {
   cash = 0;
-  cashPerClick = 0.50;
+  cashPerClick = 10.00;
   cashPerSecond = 0.25;
   clickCost = 10.00;
   automaticCost = 10.00;
   saveProgress();
   updateDisplay();
-};
+});
 
 // Update cash per second every second
 setInterval(function() {
@@ -89,43 +89,43 @@ const overlay = document.getElementById('overlay');
 const settingsPopup = document.getElementById('settingsPopup');
 const statsPopup = document.getElementById('statsPopup');
 
-document.getElementById('settingsButton').onclick = function() {
+document.getElementById('settingsButton').addEventListener('click', function() {
   overlay.style.display = 'block';
   settingsPopup.style.display = 'block';
-};
+});
 
-document.getElementById('closeSettingsPopup').onclick = function() {
+document.getElementById('closeSettingsPopup').addEventListener('click', function() {
   overlay.style.display = 'none';
   settingsPopup.style.display = 'none';
-};
+});
 
 // Stats button
-document.getElementById('statsButton').onclick = function() {
+document.getElementById('statsButton').addEventListener('click', function() {
   overlay.style.display = 'block';
   statsPopup.style.display = 'block';
-};
+});
 
-document.getElementById('closeStatsPopup').onclick = function() {
+document.getElementById('closeStatsPopup').addEventListener('click', function() {
   overlay.style.display = 'none';
   statsPopup.style.display = 'none';
-};
+});
 
 // Login/Register Tab functionality
-document.getElementById('loginRegisterButton').onclick = function() {
+document.getElementById('loginRegisterButton').addEventListener('click', function() {
   const tabs = document.getElementById('loginRegisterTabs');
   tabs.style.display = tabs.style.display === 'block' ? 'none' : 'block';
-};
+});
 
 // Tab switching
-document.getElementById('loginTab').onclick = function() {
+document.getElementById('loginTab').addEventListener('click', function() {
   document.getElementById('loginForm').style.display = 'block';
   document.getElementById('registerForm').style.display = 'none';
-};
+});
 
-document.getElementById('registerTab').onclick = function() {
+document.getElementById('registerTab').addEventListener('click', function() {
   document.getElementById('registerForm').style.display = 'block';
   document.getElementById('loginForm').style.display = 'none';
-};
+});
 
 // Load initial progress
 loadProgress();
