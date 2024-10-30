@@ -15,11 +15,11 @@ const clickCash = document.getElementById('clickCash');
 
 // Function to save game data
 function saveGame() {
-    localStorage.setItem('cash', cash);
-    localStorage.setItem('cashPerClick', cashPerClick);
-    localStorage.setItem('cashPerSecond', cashPerSecond);
-    localStorage.setItem('clickUpgradeCost', clickUpgradeCost);
-    localStorage.setItem('autoUpgradeCost', autoUpgradeCost);
+    localStorage.setItem('cash', cash.toFixed(2));
+    localStorage.setItem('cashPerClick', cashPerClick.toFixed(2));
+    localStorage.setItem('cashPerSecond', cashPerSecond.toFixed(2));
+    localStorage.setItem('clickUpgradeCost', clickUpgradeCost.toFixed(2));
+    localStorage.setItem('autoUpgradeCost', autoUpgradeCost.toFixed(2));
 }
 
 // Function to load game data
@@ -30,7 +30,11 @@ function loadGame() {
     clickUpgradeCost = parseFloat(localStorage.getItem('clickUpgradeCost')) || 10.00;
     autoUpgradeCost = parseFloat(localStorage.getItem('autoUpgradeCost')) || 10.00;
 
-    // Update the UI with loaded values
+    updateUI(); // Call the function to update the UI
+}
+
+// Function to update UI elements
+function updateUI() {
     scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
     clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
     automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
@@ -41,7 +45,7 @@ function loadGame() {
 // Cash per click function
 clickCash.addEventListener('click', () => {
     cash += cashPerClick;
-    scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
+    updateUI(); // Update UI
     saveGame(); // Save game data after each click
 });
 
@@ -51,10 +55,8 @@ upgradeClickButton.addEventListener('click', () => {
         cash -= clickUpgradeCost;
         cashPerClick = Math.ceil(cashPerClick * 1.1 * 100) / 100; // Increase by 10% and round up
         clickUpgradeCost = Math.round(clickUpgradeCost * 1.15 * 100) / 100; // Increase by 15% and round
-        clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
-        upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${clickUpgradeCost.toFixed(2)})`;
-        scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
-        saveGame(); // Save game data after each upgrade
+        updateUI(); // Update UI
+        saveGame(); // Save game data after upgrade
     }
 });
 
@@ -64,17 +66,15 @@ upgradeAutomaticButton.addEventListener('click', () => {
         cash -= autoUpgradeCost;
         cashPerSecond = Math.ceil(cashPerSecond * 1.1 * 100) / 100; // Increase by 10% and round up
         autoUpgradeCost = Math.round(autoUpgradeCost * 1.15 * 100) / 100; // Increase by 15% and round
-        automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
-        upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${autoUpgradeCost.toFixed(2)})`;
-        scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
-        saveGame(); // Save game data after each upgrade
+        updateUI(); // Update UI
+        saveGame(); // Save game data after upgrade
     }
 });
 
 // Auto-increment cash per second
 setInterval(() => {
     cash += cashPerSecond;
-    scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
+    updateUI(); // Update UI
     saveGame(); // Save game data every second
 }, 1000);
 
@@ -86,13 +86,7 @@ document.getElementById('resetProgressButton').addEventListener('click', () => {
     clickUpgradeCost = 10.00;
     autoUpgradeCost = 10.00;
 
-    // Update the UI with reset values
-    scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
-    clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
-    automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
-    upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${clickUpgradeCost.toFixed(2)})`;
-    upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${autoUpgradeCost.toFixed(2)})`;
-    
+    updateUI(); // Update UI with reset values
     localStorage.clear(); // Clear saved data
 });
 
