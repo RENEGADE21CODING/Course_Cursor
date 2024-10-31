@@ -24,9 +24,15 @@ function updateDisplay() {
   clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
   automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
   
-  // Update highest cash and net cash display
-  highestCash = Math.max(highestCash, cash); // Update highest cash if current cash is greater
+  // Update highest cash if current cash is greater
+  if (cash > highestCash) {
+    highestCash = cash; // Set highest cash to current cash
+  }
+
+  // Update net cash
   netCash += cash; // Increase net cash with current cash
+
+  // Update display for highest cash and net cash
   document.getElementById('highestCash').textContent = `$${highestCash.toFixed(2)}`;
   document.getElementById('netCash').textContent = `$${netCash.toFixed(2)}`;
 
