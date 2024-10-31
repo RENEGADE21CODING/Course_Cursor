@@ -169,3 +169,4 @@ registerButton.addEventListener('click', () => {
 backLoginRegisterButton.addEventListener('click', () => {
     loginRegisterOverlay.style.display = 'none';
 });
+
