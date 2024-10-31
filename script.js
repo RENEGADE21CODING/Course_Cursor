@@ -1,13 +1,11 @@
-// Initialize variables for game state
 let cash = 0;
-let cashPerClick = 0.50;
-let cashPerSecond = 0.25;
-let upgradeClickCost = 10.00;
-let upgradeAutomaticCost = 10.00;
-let highestCash = 0;
-let netCash = 0;
+let cashPerClick = 0.50; // Set initial cash per click to $0.50
+let cashPerSecond = 0.25; // Set initial cash per second to $0.25
+let upgradeClickCost = 10.00; // Starting cost set to $10.00
+let upgradeAutomaticCost = 10.00; // Starting cost set to $10.00
+let highestCash = 0; // Track the highest amount of cash saved up
+let netCash = 0; // Track net cash
 
-// DOM elements
 const clickCash = document.getElementById('clickCash');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const upgradeClickButton = document.getElementById('upgradeClickButton');
@@ -23,65 +21,55 @@ const resetConfirmationOverlay = document.getElementById('resetConfirmationOverl
 const closeResetConfirmation = document.getElementById('closeResetConfirmation');
 const confirmResetButton = document.getElementById('confirmResetButton');
 const cancelResetButton = document.getElementById('cancelResetButton');
-const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
-const loginRegisterButton = document.getElementById('loginRegisterButton');
-const closeLoginRegisterButtons = document.querySelectorAll('.closeLoginRegister'); // Select all close buttons
 const highestCashDisplay = document.getElementById('highestCash');
 const netCashDisplay = document.getElementById('netCash');
 
-// Update game display
 function updateDisplay() {
     scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
     clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
     automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
     highestCashDisplay.textContent = highestCash.toFixed(2);
     netCashDisplay.textContent = netCash.toFixed(2);
-    
-    // Save game state
     localStorage.setItem('gameState', JSON.stringify({ cash, cashPerClick, cashPerSecond, upgradeClickCost, upgradeAutomaticCost, highestCash, netCash }));
 }
 
-// Handle click to increase cash
 clickCash.addEventListener('click', () => {
     cash += cashPerClick;
-    highestCash = Math.max(highestCash, cash); // Track highest cash
-    netCash += cashPerClick; // Net cash should increase with each cash gain
+    highestCash = Math.max(highestCash, cash); // Update highest cash if current cash is greater
+    netCash += cashPerClick; // Increase net cash by cash per click
     updateDisplay();
-
-    // Pulse effect for feedback
+    // Pulsing effect
     clickCash.style.transform = 'scale(1.1)';
     setTimeout(() => {
         clickCash.style.transform = 'scale(1)';
     }, 100);
 });
 
-// Handle upgrading cash per click
 upgradeClickButton.addEventListener('click', () => {
     if (cash >= upgradeClickCost) {
         cash -= upgradeClickCost;
-        cashPerClick = Math.ceil(cashPerClick * 1.15 * 100) / 100; // Increase click value by 15%
+        cashPerClick = Math.ceil(cashPerClick * 1.15 * 100) / 100; // Increase by 15%
         upgradeClickCost = Math.ceil(upgradeClickCost * 1.15 * 100) / 100; // Increase cost by 15%
         upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
         updateDisplay();
     }
 });
 
-// Handle upgrading cash per second
 upgradeAutomaticButton.addEventListener('click', () => {
     if (cash >= upgradeAutomaticCost) {
         cash -= upgradeAutomaticCost;
-        cashPerSecond = Math.ceil(cashPerSecond * 1.15 * 100) / 100; // Increase per-second cash by 15%
+        cashPerSecond = Math.ceil(cashPerSecond * 1.15 * 100) / 100; // Increase by 15%
         upgradeAutomaticCost = Math.ceil(upgradeAutomaticCost * 1.15 * 100) / 100; // Increase cost by 15%
         upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
         updateDisplay();
     }
 });
 
-// Increment cash every second
+// Function to increment cash every second
 setInterval(() => {
     cash += cashPerSecond;
-    highestCash = Math.max(highestCash, cash);
-    netCash += cashPerSecond;
+    highestCash = Math.max(highestCash, cash); // Update highest cash if current cash is greater
+    netCash += cashPerSecond; // Increase net cash by cash per second
     updateDisplay();
 }, 1000);
 
@@ -103,45 +91,63 @@ window.onload = () => {
     }
 };
 
-// Open and close Settings
-document.getElementById('settingsButton').addEventListener('click', () => settingsOverlay.style.display = 'flex');
-closeSettings.addEventListener('click', () => settingsOverlay.style.display = 'none');
+// Show settings overlay
+document.getElementById('settingsButton').addEventListener('click', () => {
+    settingsOverlay.style.display = 'flex';
+});
 
-// Open and close Stats
+// Close settings overlay
+closeSettings.addEventListener('click', () => {
+    settingsOverlay.style.display = 'none';
+});
+
+// Show stats overlay
 document.getElementById('statsButton').addEventListener('click', () => {
     statsOverlay.style.display = 'flex';
     updateDisplay();
 });
-closeStats.addEventListener('click', () => statsOverlay.style.display = 'none');
 
-// Open and close Reset Confirmation
-resetProgressButton.addEventListener('click', () => resetConfirmationOverlay.style.display = 'flex');
-closeResetConfirmation.addEventListener('click', () => resetConfirmationOverlay.style.display = 'none');
+// Close stats overlay
+closeStats.addEventListener('click', () => {
+    statsOverlay.style.display = 'none';
+});
+
+// Show reset confirmation overlay
+resetProgressButton.addEventListener('click', () => {
+    resetConfirmationOverlay.style.display = 'flex';
+});
+
+// Close reset confirmation overlay
+closeResetConfirmation.addEventListener('click', () => {
+    resetConfirmationOverlay.style.display = 'none';
+});
 
 // Confirm reset progress
 confirmResetButton.addEventListener('click', () => {
-    resetConfirmationOverlay.style.display = 'none';
-    // Clear all saved data
-    localStorage.clear();
+    // Reset variables to initial values
     cash = 0;
-    cashPerClick = 0.50;
-    cashPerSecond = 0.25;
-    upgradeClickCost = 10.00;
-    upgradeAutomaticCost = 10.00;
+    cashPerClick = 0.50; // Reset to initial cash per click
+    cashPerSecond = 0.25; // Reset to initial cash per second
+    upgradeClickCost = 10.00; // Reset initial cost of click upgrade
+    upgradeAutomaticCost = 10.00; // Reset initial cost of automatic upgrade
     highestCash = 0;
     netCash = 0;
+
+    // Clear saved data from localStorage
+    localStorage.removeItem('gameState');
+
+    // Update button text to reflect reset costs
+    upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
+    upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
+
+    // Update displayed values to reset state
     updateDisplay();
+
+    // Hide reset confirmation overlay
+    resetConfirmationOverlay.style.display = 'none';
 });
 
 // Cancel reset progress
-cancelResetButton.addEventListener('click', () => resetConfirmationOverlay.style.display = 'none');
-
-// Show Login/Register pop-up
-loginRegisterButton.addEventListener('click', () => loginRegisterOverlay.style.display = 'flex');
-
-// Close Login/Register pop-up for all buttons
-closeLoginRegisterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        loginRegisterOverlay.style.display = 'none';
-    });
+cancelResetButton.addEventListener('click', () => {
+    resetConfirmationOverlay.style.display = 'none';
 });
