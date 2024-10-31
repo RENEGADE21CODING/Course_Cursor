@@ -29,9 +29,6 @@ function updateDisplay() {
     highestCash = cash; // Set highest cash to current cash
   }
 
-  // Update net cash
-  netCash += cash; // Increase net cash with current cash
-
   // Update display for highest cash and net cash
   document.getElementById('highestCash').textContent = `$${highestCash.toFixed(2)}`;
   document.getElementById('netCash').textContent = `$${netCash.toFixed(2)}`;
@@ -41,6 +38,7 @@ function updateDisplay() {
 
 clickCash.addEventListener('click', () => {
   cash += cashPerClick;
+  netCash += cashPerClick; // Increase net cash when cash is gained
   updateDisplay();
   // Pulsing effect
   clickCash.style.transform = 'scale(1.1)';
@@ -51,7 +49,8 @@ clickCash.addEventListener('click', () => {
 
 upgradeClickButton.addEventListener('click', () => {
   if (cash >= upgradeClickCost) {
-    cash -= upgradeClickCost;
+    cash -= upgradeClickCost; // Spending cash
+    // Do not subtract from netCash when upgrading
     cashPerClick = Math.ceil(cashPerClick * increasePercentage * 100) / 100; // Increase by 15%
     upgradeClickCost = Math.ceil(upgradeClickCost * increasePercentage * 100) / 100; // Increase cost by 15%
     upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
@@ -61,7 +60,8 @@ upgradeClickButton.addEventListener('click', () => {
 
 upgradeAutomaticButton.addEventListener('click', () => {
   if (cash >= upgradeAutomaticCost) {
-    cash -= upgradeAutomaticCost;
+    cash -= upgradeAutomaticCost; // Spending cash
+    // Do not subtract from netCash when upgrading
     cashPerSecond = Math.ceil(cashPerSecond * increasePercentage * 100) / 100; // Increase by 15%
     upgradeAutomaticCost = Math.ceil(upgradeAutomaticCost * increasePercentage * 100) / 100; // Increase cost by 15%
     upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
@@ -72,6 +72,7 @@ upgradeAutomaticButton.addEventListener('click', () => {
 // Function to increment cash every second
 setInterval(() => {
   cash += cashPerSecond;
+  netCash += cashPerSecond; // Increase net cash with current cash gained every second
   updateDisplay();
 }, 1000);
 
