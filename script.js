@@ -25,7 +25,7 @@ const confirmResetButton = document.getElementById('confirmResetButton');
 const cancelResetButton = document.getElementById('cancelResetButton');
 const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
 const loginRegisterButton = document.getElementById('loginRegisterButton');
-const closeLoginRegisterOverlay = document.getElementById('closeLoginRegisterOverlay');
+const closeLoginRegisterButtons = document.querySelectorAll('.closeLoginRegister'); // Select all close buttons
 const highestCashDisplay = document.getElementById('highestCash');
 const netCashDisplay = document.getElementById('netCash');
 
@@ -140,6 +140,8 @@ cancelResetButton.addEventListener('click', () => resetConfirmationOverlay.style
 loginRegisterButton.addEventListener('click', () => loginRegisterOverlay.style.display = 'flex');
 
 // Close Login/Register pop-up for all buttons
-Array.from(document.querySelectorAll('.closeLoginRegister')).forEach(button => {
-    button.addEventListener('click', () => loginRegisterOverlay.style.display = 'none');
+closeLoginRegisterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        loginRegisterOverlay.style.display = 'none';
+    });
 });
