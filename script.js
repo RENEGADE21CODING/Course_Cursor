@@ -3,6 +3,8 @@ let cashPerClick = 0.50; // Set initial cash per click to $0.50
 let cashPerSecond = 0.25; // Set initial cash per second to $0.25
 let upgradeClickCost = 10.00; // Starting cost set to $10.00
 let upgradeAutomaticCost = 10.00; // Starting cost set to $10.00
+let highestCash = 0; // New variable to track highest cash saved
+let netCash = 0; // New variable to track net cash
 
 const clickCash = document.getElementById('clickCash');
 const scoreDisplay = document.getElementById('scoreDisplay');
@@ -21,7 +23,14 @@ function updateDisplay() {
   scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
   clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
   automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
-  localStorage.setItem('gameState', JSON.stringify({ cash, cashPerClick, cashPerSecond, upgradeClickCost, upgradeAutomaticCost }));
+  
+  // Update highest cash and net cash display
+  highestCash = Math.max(highestCash, cash); // Update highest cash if current cash is greater
+  netCash += cash; // Increase net cash with current cash
+  document.getElementById('highestCash').textContent = `$${highestCash.toFixed(2)}`;
+  document.getElementById('netCash').textContent = `$${netCash.toFixed(2)}`;
+
+  localStorage.setItem('gameState', JSON.stringify({ cash, cashPerClick, cashPerSecond, upgradeClickCost, upgradeAutomaticCost, highestCash, netCash }));
 }
 
 clickCash.addEventListener('click', () => {
@@ -64,12 +73,14 @@ setInterval(() => {
 window.onload = () => {
   const savedState = localStorage.getItem('gameState');
   if (savedState) {
-    const { cash: savedCash, cashPerClick: savedCashPerClick, cashPerSecond: savedCashPerSecond, upgradeClickCost: savedUpgradeClickCost, upgradeAutomaticCost: savedUpgradeAutomaticCost } = JSON.parse(savedState);
+    const { cash: savedCash, cashPerClick: savedCashPerClick, cashPerSecond: savedCashPerSecond, upgradeClickCost: savedUpgradeClickCost, upgradeAutomaticCost: savedUpgradeAutomaticCost, highestCash: savedHighestCash, netCash: savedNetCash } = JSON.parse(savedState);
     cash = savedCash;
     cashPerClick = savedCashPerClick;
     cashPerSecond = savedCashPerSecond;
     upgradeClickCost = savedUpgradeClickCost;
     upgradeAutomaticCost = savedUpgradeAutomaticCost;
+    highestCash = savedHighestCash; // Restore highest cash
+    netCash = savedNetCash; // Restore net cash
     updateDisplay();
     upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
     upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
