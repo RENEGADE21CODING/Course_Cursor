@@ -1,91 +1,86 @@
-// Initialize saved values or set default values
-let cash = parseFloat(localStorage.getItem('cash')) || 0;
-let cashPerClick = parseFloat(localStorage.getItem('cashPerClick')) || 0.50;
-let cashPerSecond = parseFloat(localStorage.getItem('cashPerSecond')) || 0.25;
-let clickUpgradeCost = parseFloat(localStorage.getItem('clickUpgradeCost')) || 10.00;
-let automaticUpgradeCost = parseFloat(localStorage.getItem('automaticUpgradeCost')) || 10.00;
+// Initial setup for values
+let cash = 0;
+let cashPerClick = 10; // Starting cash per click
+let cashPerSecond = 0.25; // Starting cash per second
 
-// Display cash amount
-const scoreDisplay = document.getElementById('scoreDisplay');
-scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
+// Load saved data or set defaults
+function loadProgress() {
+    const savedProgress = JSON.parse(localStorage.getItem("platickerProgress")) || {};
+    cash = savedProgress.cash || 0;
+    cashPerClick = savedProgress.cashPerClick || 10;
+    cashPerSecond = savedProgress.cashPerSecond || 0.25;
+    updateDisplay();
+}
 
-// Function to update cash display
+// Update the display with current values
 function updateDisplay() {
-  scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
+    document.getElementById("score").innerText = `Cash: $${cash.toFixed(2)}`;
+    document.getElementById("currentCashPerClick").innerText = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
+    document.getElementById("currentCashPerSecond").innerText = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
 }
 
-// Cash click event
-const clickCash = document.getElementById('clickCash');
-clickCash.addEventListener('click', () => {
-  cash += cashPerClick;
-  updateDisplay();
-});
+// Function to save progress
+function saveProgress() {
+    localStorage.setItem("platickerProgress", JSON.stringify({
+        cash,
+        cashPerClick,
+        cashPerSecond
+    }));
+}
 
-// Upgrade buttons
-const upgradeClickButton = document.getElementById('upgradeClickButton');
-upgradeClickButton.addEventListener('click', () => {
-  if (cash >= clickUpgradeCost) {
-    cash -= clickUpgradeCost;
-    cashPerClick *= 1.1; // Increase cash per click by 10%
-    clickUpgradeCost = Math.round(clickUpgradeCost * 1.15 * 100) / 100; // Increase cost by 15%
+// Cash click functionality
+document.getElementById("clickCash").addEventListener("click", () => {
+    cash += cashPerClick;
     updateDisplay();
-    upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${clickUpgradeCost.toFixed(2)})`;
-  }
+    saveProgress();
 });
 
-const upgradeAutomaticButton = document.getElementById('upgradeAutomaticButton');
-upgradeAutomaticButton.addEventListener('click', () => {
-  if (cash >= automaticUpgradeCost) {
-    cash -= automaticUpgradeCost;
-    cashPerSecond *= 1.1; // Increase cash per second by 10%
-    automaticUpgradeCost = Math.round(automaticUpgradeCost * 1.15 * 100) / 100; // Increase cost by 15%
-    updateDisplay();
-    upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${automaticUpgradeCost.toFixed(2)})`;
-  }
+// Upgrade functions
+document.getElementById("buyCashPerClick").addEventListener("click", () => {
+    let cost = (cashPerClick * 1.15).toFixed(2); // Cost increases by 15%
+    if (cash >= cost) {
+        cash -= cost;
+        cashPerClick *= 1.1; // Increase cash per click by 10%
+        updateDisplay();
+        saveProgress();
+    }
 });
 
-// Automatic cash generation
+document.getElementById("buyCashPerSecond").addEventListener("click", () => {
+    let cost = (10).toFixed(2); // Initial cost for this upgrade
+    if (cash >= cost) {
+        cash -= cost;
+        cashPerSecond *= 1.1; // Increase cash per second by 10%
+        updateDisplay();
+        saveProgress();
+    }
+});
+
+// Show and hide popups
+function showPopup(popup) {
+    document.getElementById("overlay").style.display = "flex";
+    document.getElementById(popup).style.display = "block";
+}
+
+function hidePopups() {
+    document.getElementById("overlay").style.display = "none";
+    document.querySelectorAll('.popup').forEach(popup => popup.style.display = 'none');
+}
+
+// Event listeners for settings and stats buttons
+document.getElementById("settingsButton").addEventListener("click", () => showPopup('settingsPopup'));
+document.getElementById("statsButton").addEventListener("click", () => showPopup('statsPopup'));
+
+// Close buttons for popups
+document.getElementById("closeSettingsPopup").addEventListener("click", hidePopups);
+document.getElementById("closeStatsPopup").addEventListener("click", hidePopups);
+
+// Load progress on startup
+loadProgress();
+
+// Increment cash per second
 setInterval(() => {
-  cash += cashPerSecond;
-  updateDisplay();
+    cash += cashPerSecond;
+    updateDisplay();
+    saveProgress();
 }, 1000);
-
-// Reset progress function
-const resetProgressButton = document.getElementById('resetProgressButton');
-resetProgressButton.addEventListener('click', () => {
-  cash = 0;
-  cashPerClick = 0.50;
-  cashPerSecond = 0.25;
-  clickUpgradeCost = 10.00;
-  automaticUpgradeCost = 10.00;
-  localStorage.clear(); // Clear saved data
-  updateDisplay();
-});
-
-// Function to close popups
-function closePopups() {
-  document.getElementById('settingsPopup').style.display = 'none';
-  document.getElementById('statsPopup').style.display = 'none';
-  document.getElementById('overlay').style.display = 'none';
-}
-
-// Event listeners for buttons
-const statsButton = document.getElementById('statsButton');
-statsButton.addEventListener('click', () => {
-  closePopups();
-  document.getElementById('statsPopup').style.display = 'block';
-  document.getElementById('overlay').style.display = 'block';
-});
-
-const settingsButton = document.getElementById('settingsButton');
-settingsButton.addEventListener('click', () => {
-  closePopups();
-  document.getElementById('settingsPopup').style.display = 'block';
-  document.getElementById('overlay').style.display = 'block';
-});
-
-document.getElementById('closeSettingsPopup').addEventListener('click', closePopups);
-document.getElementById('closeStatsPopup').addEventListener('click', closePopups);
-
-// Close popups when loading
-closePopups();
