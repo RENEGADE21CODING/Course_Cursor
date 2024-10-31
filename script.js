@@ -1,86 +1,95 @@
-// Initial setup for values
 let cash = 0;
-let cashPerClick = 10; // Starting cash per click
-let cashPerSecond = 0.25; // Starting cash per second
+let cashPerClick = 0.50; // Set initial cash per click to $0.50
+let cashPerSecond = 0.25; // Set initial cash per second to $0.25
+let upgradeClickCost = 10.00; // Starting cost set to $10.00
+let upgradeAutomaticCost = 10.00; // Starting cost set to $10.00
 
-// Load saved data or set defaults
-function loadProgress() {
-    const savedProgress = JSON.parse(localStorage.getItem("platickerProgress")) || {};
-    cash = savedProgress.cash || 0;
-    cashPerClick = savedProgress.cashPerClick || 10;
-    cashPerSecond = savedProgress.cashPerSecond || 0.25;
-    updateDisplay();
-}
+const clickCash = document.getElementById('clickCash');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const upgradeClickButton = document.getElementById('upgradeClickButton');
+const upgradeAutomaticButton = document.getElementById('upgradeAutomaticButton');
+const clickInfo = document.getElementById('clickInfo');
+const automaticInfo = document.getElementById('automaticInfo');
+const settingsOverlay = document.getElementById('settingsOverlay');
+const statsOverlay = document.getElementById('statsOverlay');
+const closeSettings = document.getElementById('closeSettings');
+const closeStats = document.getElementById('closeStats');
 
-// Update the display with current values
 function updateDisplay() {
-    document.getElementById("score").innerText = `Cash: $${cash.toFixed(2)}`;
-    document.getElementById("currentCashPerClick").innerText = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
-    document.getElementById("currentCashPerSecond").innerText = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
+  scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
+  clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
+  automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
+  localStorage.setItem('gameState', JSON.stringify({ cash, cashPerClick, cashPerSecond, upgradeClickCost, upgradeAutomaticCost }));
 }
 
-// Function to save progress
-function saveProgress() {
-    localStorage.setItem("platickerProgress", JSON.stringify({
-        cash,
-        cashPerClick,
-        cashPerSecond
-    }));
-}
+clickCash.addEventListener('click', () => {
+  cash += cashPerClick;
+  updateDisplay();
+  // Pulsing effect
+  clickCash.style.transform = 'scale(1.1)';
+  setTimeout(() => {
+    clickCash.style.transform = 'scale(1)';
+  }, 100);
+});
 
-// Cash click functionality
-document.getElementById("clickCash").addEventListener("click", () => {
-    cash += cashPerClick;
+upgradeClickButton.addEventListener('click', () => {
+  if (cash >= upgradeClickCost) {
+    cash -= upgradeClickCost;
+    cashPerClick = Math.ceil(cashPerClick * 1.15 * 100) / 100; // Increase by 15%
+    upgradeClickCost = Math.ceil(upgradeClickCost * 1.15 * 100) / 100; // Increase cost by 15%
+    upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
     updateDisplay();
-    saveProgress();
+  }
 });
 
-// Upgrade functions
-document.getElementById("buyCashPerClick").addEventListener("click", () => {
-    let cost = (cashPerClick * 1.15).toFixed(2); // Cost increases by 15%
-    if (cash >= cost) {
-        cash -= cost;
-        cashPerClick *= 1.1; // Increase cash per click by 10%
-        updateDisplay();
-        saveProgress();
-    }
+upgradeAutomaticButton.addEventListener('click', () => {
+  if (cash >= upgradeAutomaticCost) {
+    cash -= upgradeAutomaticCost;
+    cashPerSecond = Math.ceil(cashPerSecond * 1.15 * 100) / 100; // Increase by 15%
+    upgradeAutomaticCost = Math.ceil(upgradeAutomaticCost * 1.15 * 100) / 100; // Increase cost by 15%
+    upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
+    updateDisplay();
+  }
 });
 
-document.getElementById("buyCashPerSecond").addEventListener("click", () => {
-    let cost = (10).toFixed(2); // Initial cost for this upgrade
-    if (cash >= cost) {
-        cash -= cost;
-        cashPerSecond *= 1.1; // Increase cash per second by 10%
-        updateDisplay();
-        saveProgress();
-    }
-});
-
-// Show and hide popups
-function showPopup(popup) {
-    document.getElementById("overlay").style.display = "flex";
-    document.getElementById(popup).style.display = "block";
-}
-
-function hidePopups() {
-    document.getElementById("overlay").style.display = "none";
-    document.querySelectorAll('.popup').forEach(popup => popup.style.display = 'none');
-}
-
-// Event listeners for settings and stats buttons
-document.getElementById("settingsButton").addEventListener("click", () => showPopup('settingsPopup'));
-document.getElementById("statsButton").addEventListener("click", () => showPopup('statsPopup'));
-
-// Close buttons for popups
-document.getElementById("closeSettingsPopup").addEventListener("click", hidePopups);
-document.getElementById("closeStatsPopup").addEventListener("click", hidePopups);
-
-// Load progress on startup
-loadProgress();
-
-// Increment cash per second
+// Function to increment cash every second
 setInterval(() => {
-    cash += cashPerSecond;
-    updateDisplay();
-    saveProgress();
+  cash += cashPerSecond;
+  updateDisplay();
 }, 1000);
+
+// Load game state from localStorage
+window.onload = () => {
+  const savedState = localStorage.getItem('gameState');
+  if (savedState) {
+    const { cash: savedCash, cashPerClick: savedCashPerClick, cashPerSecond: savedCashPerSecond, upgradeClickCost: savedUpgradeClickCost, upgradeAutomaticCost: savedUpgradeAutomaticCost } = JSON.parse(savedState);
+    cash = savedCash;
+    cashPerClick = savedCashPerClick;
+    cashPerSecond = savedCashPerSecond;
+    upgradeClickCost = savedUpgradeClickCost;
+    upgradeAutomaticCost = savedUpgradeAutomaticCost;
+    updateDisplay();
+    upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
+    upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
+  }
+};
+
+// Show settings overlay
+document.getElementById('settingsButton').addEventListener('click', () => {
+  settingsOverlay.style.display = 'flex';
+});
+
+// Close settings overlay
+closeSettings.addEventListener('click', () => {
+  settingsOverlay.style.display = 'none';
+});
+
+// Show stats overlay
+document.getElementById('statsButton').addEventListener('click', () => {
+  statsOverlay.style.display = 'flex';
+});
+
+// Close stats overlay
+closeStats.addEventListener('click', () => {
+  statsOverlay.style.display = 'none';
+});
