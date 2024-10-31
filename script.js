@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-  // Initial setup for variables
+  // Variables
   let cash = parseFloat(localStorage.getItem("cash")) || 0.0;
   let cashPerClick = parseFloat(localStorage.getItem("cashPerClick")) || 0.5;
   let cashPerSecond = parseFloat(localStorage.getItem("cashPerSecond")) || 0.25;
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const clickInfo = document.getElementById("clickInfo");
   const automaticInfo = document.getElementById("automaticInfo");
 
-  // Update displays
+  // Update Display
   function updateDisplays() {
     scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
     clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
@@ -19,7 +19,13 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   updateDisplays();
 
-  // Event Listeners for buttons
+  // Event Listeners for Buttons
+  document.getElementById("cashClickImage").addEventListener("click", function() {
+    cash += cashPerClick;
+    localStorage.setItem("cash", cash);
+    updateDisplays();
+  });
+
   document.getElementById("upgradeClickButton").addEventListener("click", function() {
     if (cash >= clickUpgradeCost) {
       cash -= clickUpgradeCost;
@@ -44,54 +50,46 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  // Auto-increment cash per second
   setInterval(function() {
     cash += cashPerSecond;
     localStorage.setItem("cash", cash);
     updateDisplays();
   }, 1000);
 
-  // Reset Progress
   document.getElementById("resetProgressButton").addEventListener("click", function() {
     cash = 0.0;
     cashPerClick = 0.5;
     cashPerSecond = 0.25;
     clickUpgradeCost = 10.0;
     autoUpgradeCost = 10.0;
-
-    // Update local storage values
     localStorage.setItem("cash", cash);
     localStorage.setItem("cashPerClick", cashPerClick);
     localStorage.setItem("cashPerSecond", cashPerSecond);
     localStorage.setItem("clickUpgradeCost", clickUpgradeCost);
     localStorage.setItem("autoUpgradeCost", autoUpgradeCost);
-
     updateDisplays();
   });
 
-  // Settings Popup Toggle
   document.getElementById("settingsButton").addEventListener("click", function() {
     document.getElementById("settingsPopup").style.display = "block";
     document.getElementById("overlay").style.display = "block";
   });
 
-  // Stats Popup Toggle
   document.getElementById("statsButton").addEventListener("click", function() {
     document.getElementById("statsPopup").style.display = "block";
     document.getElementById("overlay").style.display = "block";
   });
 
-  // Close Popups
   document.getElementById("closeSettingsPopup").addEventListener("click", function() {
     document.getElementById("settingsPopup").style.display = "none";
     document.getElementById("overlay").style.display = "none";
   });
+
   document.getElementById("closeStatsPopup").addEventListener("click", function() {
     document.getElementById("statsPopup").style.display = "none";
     document.getElementById("overlay").style.display = "none";
   });
 
-  // Overlay Click Closes Popups
   document.getElementById("overlay").addEventListener("click", function() {
     document.getElementById("settingsPopup").style.display = "none";
     document.getElementById("statsPopup").style.display = "none";
