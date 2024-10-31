@@ -48,7 +48,7 @@ clickCash.addEventListener('click', () => {
 upgradeClickButton.addEventListener('click', () => {
     if (cash >= upgradeClickCost) {
         cash -= upgradeClickCost;
-        cashPerClick = Math.ceil(cashPerClick * 1.15 * 100) / 100; // Increase by 15%
+        cashPerClick = Math.ceil(cashPerClick * 1.13 * 100) / 100; // Increase by 15%
         upgradeClickCost = Math.ceil(upgradeClickCost * 1.15 * 100) / 100; // Increase cost by 15%
         upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
         updateDisplay();
@@ -58,7 +58,7 @@ upgradeClickButton.addEventListener('click', () => {
 upgradeAutomaticButton.addEventListener('click', () => {
     if (cash >= upgradeAutomaticCost) {
         cash -= upgradeAutomaticCost;
-        cashPerSecond = Math.ceil(cashPerSecond * 1.15 * 100) / 100; // Increase by 15%
+        cashPerSecond = Math.ceil(cashPerSecond * 1.13 * 100) / 100; // Increase by 15%
         upgradeAutomaticCost = Math.ceil(upgradeAutomaticCost * 1.15 * 100) / 100; // Increase cost by 15%
         upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
         updateDisplay();
