@@ -29,7 +29,7 @@ function updateDisplay() {
     clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
     automaticInfo.textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
     highestCashDisplay.textContent = highestCash.toFixed(2);
-    netCashDisplay.textContent = (cash + netCash).toFixed(2);
+    netCashDisplay.textContent = netCash.toFixed(2);
     localStorage.setItem('gameState', JSON.stringify({ cash, cashPerClick, cashPerSecond, upgradeClickCost, upgradeAutomaticCost, highestCash, netCash }));
 }
 
@@ -124,12 +124,30 @@ closeResetConfirmation.addEventListener('click', () => {
 
 // Confirm reset progress
 confirmResetButton.addEventListener('click', () => {
+    // Reset variables to initial values
+    cash = 0;
+    cashPerClick = 0.50; // Reset to initial cash per click
+    cashPerSecond = 0.25; // Reset to initial cash per second
+    upgradeClickCost = 10.00; // Reset initial cost of click upgrade
+    upgradeAutomaticCost = 10.00; // Reset initial cost of automatic upgrade
+    highestCash = 0;
+    netCash = 0;
+
+    // Clear saved data from localStorage
+    localStorage.removeItem('gameState');
+
+    // Update button text to reflect reset costs
+    upgradeClickButton.textContent = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
+    upgradeAutomaticButton.textContent = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
+
+    // Update displayed values to reset state
+    updateDisplay();
+
+    // Hide reset confirmation overlay
     resetConfirmationOverlay.style.display = 'none';
-    // Functionality for resetting will be added later
 });
 
 // Cancel reset progress
 cancelResetButton.addEventListener('click', () => {
     resetConfirmationOverlay.style.display = 'none';
 });
-
