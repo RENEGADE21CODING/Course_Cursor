@@ -6,6 +6,7 @@ let upgradeAutomaticCost = 10.00; // Starting cost set to $10.00
 let highestCash = 0; // Track the highest amount of cash saved up
 let netCash = 0; // Track net cash
 
+
 const clickCash = document.getElementById('clickCash');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const upgradeClickButton = document.getElementById('upgradeClickButton');
