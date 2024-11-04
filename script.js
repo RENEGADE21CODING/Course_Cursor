@@ -25,6 +25,11 @@ const cancelResetButton = document.getElementById('cancelResetButton');
 const highestCashDisplay = document.getElementById('highestCash');
 const netCashDisplay = document.getElementById('netCash');
 const hoursPlayedDisplay = document.getElementById('hoursPlayed');
+const loginRegisterButton = document.getElementById('loginRegisterButton');
+const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
+const closeLoginRegister = document.getElementById('closeLoginRegister');
+const loginButton = document.getElementById('loginButton');
+const registerButton = document.getElementById('registerButton');
 
 function updateDisplay() {
     scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
@@ -35,7 +40,11 @@ function updateDisplay() {
     highestCashDisplay.textContent = highestCash.toFixed(2);
     netCashDisplay.textContent = netCash.toFixed(2);
     hoursPlayedDisplay.textContent = totalHoursPlayed.toFixed(2);
-    localStorage.setItem('gameState', JSON.stringify({ cash, cashPerClick, cashPerSecond, upgradeClickCost, upgradeAutomaticCost, highestCash, netCash, totalHoursPlayed }));
+    localStorage.setItem('gameState', JSON.stringify({
+        cash, cashPerClick, cashPerSecond, 
+        upgradeClickCost, upgradeAutomaticCost, 
+        highestCash, netCash, totalHoursPlayed
+    }));
 }
 
 clickCash.addEventListener('click', () => {
@@ -78,7 +87,17 @@ setInterval(() => {
 window.onload = () => {
     const savedState = localStorage.getItem('gameState');
     if (savedState) {
-        const { cash: savedCash, cashPerClick: savedCashPerClick, cashPerSecond: savedCashPerSecond, upgradeClickCost: savedUpgradeClickCost, upgradeAutomaticCost: savedUpgradeAutomaticCost, highestCash: savedHighestCash, netCash: savedNetCash, totalHoursPlayed: savedTotalHoursPlayed } = JSON.parse(savedState);
+        const { 
+            cash: savedCash, 
+            cashPerClick: savedCashPerClick, 
+            cashPerSecond: savedCashPerSecond, 
+            upgradeClickCost: savedUpgradeClickCost, 
+            upgradeAutomaticCost: savedUpgradeAutomaticCost, 
+            highestCash: savedHighestCash, 
+            netCash: savedNetCash, 
+            totalHoursPlayed: savedTotalHoursPlayed 
+        } = JSON.parse(savedState);
+
         cash = savedCash;
         cashPerClick = savedCashPerClick;
         cashPerSecond = savedCashPerSecond;
@@ -91,6 +110,7 @@ window.onload = () => {
     }
 };
 
+// Event Listeners for pop-ups
 document.getElementById('settingsButton').addEventListener('click', () => {
     settingsOverlay.style.display = 'flex';
 });
@@ -136,14 +156,20 @@ cancelResetButton.addEventListener('click', () => {
     resetConfirmationOverlay.style.display = 'none';
 });
 
-const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
-const closeLoginRegister = document.getElementById('closeLoginRegister');
-const loginRegisterButton = document.getElementById('loginRegisterButton');
-
+// Login/Register pop-up
 loginRegisterButton.addEventListener('click', () => {
     loginRegisterOverlay.style.display = 'flex';
 });
 
 closeLoginRegister.addEventListener('click', () => {
     loginRegisterOverlay.style.display = 'none';
+});
+
+// Placeholder functionality for login and register buttons
+loginButton.addEventListener('click', () => {
+    alert('Login functionality is not yet implemented.');
+});
+
+registerButton.addEventListener('click', () => {
+    alert('Register functionality is not yet implemented.');
 });
