@@ -135,3 +135,15 @@ confirmResetButton.addEventListener('click', () => {
 cancelResetButton.addEventListener('click', () => {
     resetConfirmationOverlay.style.display = 'none';
 });
+
+const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
+const closeLoginRegister = document.getElementById('closeLoginRegister');
+const loginRegisterButton = document.getElementById('loginRegisterButton');
+
+loginRegisterButton.addEventListener('click', () => {
+    loginRegisterOverlay.style.display = 'flex';
+});
+
+closeLoginRegister.addEventListener('click', () => {
+    loginRegisterOverlay.style.display = 'none';
+});
