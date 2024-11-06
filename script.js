@@ -1,14 +1,3 @@
-console.log("Simple test - script.js loaded correctly");
-
-// Load environment variables
-require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
-
-// Supabase client setup
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 // Game variables
 let cash = 0;
 let cashPerClick = 0.50;
@@ -49,6 +38,10 @@ function updateDisplay() {
     highestCashDisplay.textContent = highestCash.toFixed(2);
     netCashDisplay.textContent = netCash.toFixed(2);
     hoursPlayedDisplay.textContent = totalHoursPlayed.toFixed(2);
+}
+
+// Save game state to localStorage periodically
+function saveGameState() {
     localStorage.setItem('gameState', JSON.stringify({ cash, cashPerClick, cashPerSecond, upgradeClickCost, upgradeAutomaticCost, highestCash, netCash, totalHoursPlayed }));
 }
 
@@ -107,6 +100,9 @@ window.onload = () => {
         updateDisplay();
     }
 };
+
+// Save game state every 1 second
+setInterval(saveGameState, 1000);
 
 // Button functions for settings and stats
 document.getElementById('settingsButton').addEventListener('click', () => {
