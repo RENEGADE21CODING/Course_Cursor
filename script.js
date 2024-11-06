@@ -1,3 +1,7 @@
+// Initialize Supabase client
+const supabase = createClient('your-supabase-url', 'your-supabase-anon-key');
+
+// Game variables
 let cash = 0;
 let cashPerClick = 0.50;
 let cashPerSecond = 0.25;
@@ -5,8 +9,9 @@ let upgradeClickCost = 10.00;
 let upgradeAutomaticCost = 10.00;
 let highestCash = 0;
 let netCash = 0;
-let totalHoursPlayed = 0; // Add total hours played stat
+let totalHoursPlayed = 0;
 
+// DOM Elements
 const clickCash = document.getElementById('clickCash');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const upgradeClickButton = document.getElementById('upgradeClickButton');
@@ -31,6 +36,7 @@ const closeLoginRegister = document.getElementById('closeLoginRegister');
 const loginButton = document.getElementById('loginButton');
 const registerButton = document.getElementById('registerButton');
 
+// Function to update display and sync with Supabase
 function updateDisplay() {
     scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
     clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
@@ -40,77 +46,96 @@ function updateDisplay() {
     highestCashDisplay.textContent = highestCash.toFixed(2);
     netCashDisplay.textContent = netCash.toFixed(2);
     hoursPlayedDisplay.textContent = totalHoursPlayed.toFixed(2);
-    localStorage.setItem('gameState', JSON.stringify({
-        cash, cashPerClick, cashPerSecond, 
-        upgradeClickCost, upgradeAutomaticCost, 
-        highestCash, netCash, totalHoursPlayed
-    }));
 }
 
-clickCash.addEventListener('click', () => {
-    cash += cashPerClick;
-    highestCash = Math.max(highestCash, cash);
-    netCash += cashPerClick;
+// Register User
+async function registerUser(email, password) {
+    const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        alert('Error during registration: ' + error.message);
+        return;
+    }
+
+    alert('Registration successful! Please check your email for confirmation.');
+}
+
+// Login User
+async function loginUser(email, password) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        alert('Error during login: ' + error.message);
+        return;
+    }
+
+    alert('Login successful!');
+    // Fetch user-related data from the database (e.g., cash, progress)
+    const { user } = data;
+    const { data: userData, error: userDataError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+    if (userDataError) {
+        alert('Error fetching user data: ' + userDataError.message);
+        return;
+    }
+
+    // Sync user's data with the game
+    cash = userData.cash || 0;
+    cashPerClick = userData.cashPerClick || 0.50;
+    cashPerSecond = userData.cashPerSecond || 0.25;
+    upgradeClickCost = userData.upgradeClickCost || 10.00;
+    upgradeAutomaticCost = userData.upgradeAutomaticCost || 10.00;
+    highestCash = userData.highestCash || 0;
+    netCash = userData.netCash || 0;
+    totalHoursPlayed = userData.totalHoursPlayed || 0;
     updateDisplay();
-    clickCash.style.transform = 'scale(1.1)';
-    setTimeout(() => {
-        clickCash.style.transform = 'scale(1)';
-    }, 100);
-});
-
-upgradeClickButton.addEventListener('click', () => {
-    if (cash >= upgradeClickCost) {
-        cash -= upgradeClickCost;
-        cashPerClick = Math.ceil(cashPerClick * 1.15 * 100) / 100;
-        upgradeClickCost = Math.ceil(upgradeClickCost * 1.15 * 100) / 100;
-        updateDisplay();
-    }
-});
-
-upgradeAutomaticButton.addEventListener('click', () => {
-    if (cash >= upgradeAutomaticCost) {
-        cash -= upgradeAutomaticCost;
-        cashPerSecond = Math.ceil(cashPerSecond * 1.15 * 100) / 100;
-        upgradeAutomaticCost = Math.ceil(upgradeAutomaticCost * 1.15 * 100) / 100;
-        updateDisplay();
-    }
-});
-
-setInterval(() => {
-    cash += cashPerSecond;
-    highestCash = Math.max(highestCash, cash);
-    netCash += cashPerSecond;
-    totalHoursPlayed += 1 / 3600; // Update hours played every second
-    updateDisplay();
-}, 1000);
-
-window.onload = () => {
-    const savedState = localStorage.getItem('gameState');
-    if (savedState) {
-        const { 
-            cash: savedCash, 
-            cashPerClick: savedCashPerClick, 
-            cashPerSecond: savedCashPerSecond, 
-            upgradeClickCost: savedUpgradeClickCost, 
-            upgradeAutomaticCost: savedUpgradeAutomaticCost, 
-            highestCash: savedHighestCash, 
-            netCash: savedNetCash, 
-            totalHoursPlayed: savedTotalHoursPlayed 
-        } = JSON.parse(savedState);
-
-        cash = savedCash;
-        cashPerClick = savedCashPerClick;
-        cashPerSecond = savedCashPerSecond;
-        upgradeClickCost = savedUpgradeClickCost;
-        upgradeAutomaticCost = savedUpgradeAutomaticCost;
-        highestCash = savedHighestCash;
-        netCash = savedNetCash;
-        totalHoursPlayed = savedTotalHoursPlayed;
-        updateDisplay();
-    }
-};
+}
 
 // Event Listeners for pop-ups
+loginRegisterButton.addEventListener('click', () => {
+    loginRegisterOverlay.style.display = 'flex';
+});
+
+closeLoginRegister.addEventListener('click', () => {
+    loginRegisterOverlay.style.display = 'none';
+});
+
+// Login/Register pop-up button functionality
+loginButton.addEventListener('click', () => {
+    const email = document.getElementById('emailInput').value;
+    const password = document.getElementById('passwordInput').value;
+
+    if (email && password) {
+        loginUser(email, password);
+        loginRegisterOverlay.style.display = 'none';
+    } else {
+        alert('Please enter both email and password.');
+    }
+});
+
+registerButton.addEventListener('click', () => {
+    const email = document.getElementById('emailInput').value;
+    const password = document.getElementById('passwordInput').value;
+
+    if (email && password) {
+        registerUser(email, password);
+        loginRegisterOverlay.style.display = 'none';
+    } else {
+        alert('Please enter both email and password.');
+    }
+});
+
+// Event listeners for other pop-ups
 document.getElementById('settingsButton').addEventListener('click', () => {
     settingsOverlay.style.display = 'flex';
 });
@@ -154,22 +179,4 @@ confirmResetButton.addEventListener('click', () => {
 
 cancelResetButton.addEventListener('click', () => {
     resetConfirmationOverlay.style.display = 'none';
-});
-
-// Login/Register pop-up
-loginRegisterButton.addEventListener('click', () => {
-    loginRegisterOverlay.style.display = 'flex';
-});
-
-closeLoginRegister.addEventListener('click', () => {
-    loginRegisterOverlay.style.display = 'none';
-});
-
-// Placeholder functionality for login and register buttons
-loginButton.addEventListener('click', () => {
-    alert('Login functionality is not yet implemented.');
-});
-
-registerButton.addEventListener('click', () => {
-    alert('Register functionality is not yet implemented.');
 });
