@@ -1,3 +1,5 @@
+console.log("Simple test - script.js loaded correctly");
+
 // Load environment variables
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
