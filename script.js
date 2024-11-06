@@ -1,10 +1,3 @@
-// Initialize Supabase
-const { createClient } = supabase;
-const supabaseUrl = 'https://your-project.supabase.co'; // Replace with your Supabase URL
-const supabaseKey = 'your-anon-key'; // Replace with your Supabase anon key
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Game state variables
 let cash = 0;
 let cashPerClick = 0.50;
 let cashPerSecond = 0.25;
@@ -13,8 +6,8 @@ let upgradeAutomaticCost = 10.00;
 let highestCash = 0;
 let netCash = 0;
 let totalHoursPlayed = 0; // Add total hours played stat
+let currentUser = null; // To track the logged-in user
 
-// DOM elements
 const clickCash = document.getElementById('clickCash');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const upgradeClickButton = document.getElementById('upgradeClickButton');
@@ -38,12 +31,15 @@ const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
 const closeLoginRegister = document.getElementById('closeLoginRegister');
 const loginButton = document.getElementById('loginButton');
 const registerButton = document.getElementById('registerButton');
+const emailInput = document.getElementById('emailInput');  // New email input element
+const passwordInput = document.getElementById('passwordInput');  // New password input element
 
-// Email and password input fields
-const emailInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
+// Initialize Supabase client
+const { createClient } = supabase;
+const supabaseUrl = "https://yesyeuzhiftumudfbsam.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inllc3lldXpoaWZ0dW11ZGZic2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA5MTI3MjYsImV4cCI6MjA0NjQ4ODcyNn0.xzkxofDA4E9hx3q6O3f4SDd0KK66YrbzqdpOmMzYvpM";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Update display function
 function updateDisplay() {
     scoreDisplay.textContent = `Cash: $${cash.toFixed(2)}`;
     clickInfo.textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
@@ -60,7 +56,6 @@ function updateDisplay() {
     }));
 }
 
-// Event listeners for game actions
 clickCash.addEventListener('click', () => {
     cash += cashPerClick;
     highestCash = Math.max(highestCash, cash);
@@ -90,7 +85,6 @@ upgradeAutomaticButton.addEventListener('click', () => {
     }
 });
 
-// Automatic cash earning interval
 setInterval(() => {
     cash += cashPerSecond;
     highestCash = Math.max(highestCash, cash);
@@ -99,7 +93,90 @@ setInterval(() => {
     updateDisplay();
 }, 1000);
 
-// Load saved game state from localStorage
+// Event Listeners for login/register
+loginButton.addEventListener('click', async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    
+    const { user, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+    });
+    
+    if (error) {
+        alert(`Login failed: ${error.message}`);
+    } else {
+        currentUser = user;
+        loginRegisterOverlay.style.display = 'none';
+        alert(`Welcome back, ${user.email}!`);
+        loadUserGameData(user.id); // Load the saved game data after login
+    }
+});
+
+registerButton.addEventListener('click', async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    
+    const { user, error } = await supabase.auth.signUp({
+        email,
+        password
+    });
+    
+    if (error) {
+        alert(`Registration failed: ${error.message}`);
+    } else {
+        currentUser = user;
+        loginRegisterOverlay.style.display = 'none';
+        alert(`Welcome, ${user.email}! You are now registered.`);
+    }
+});
+
+async function loadUserGameData(userId) {
+    const { data, error } = await supabase
+        .from('game_data')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+    if (error) {
+        console.error('Error fetching game data:', error.message);
+    } else {
+        if (data) {
+            cash = data.cash || 0;
+            cashPerClick = data.cash_per_click || 0.50;
+            cashPerSecond = data.cash_per_second || 0.25;
+            upgradeClickCost = data.upgrade_click_cost || 10.00;
+            upgradeAutomaticCost = data.upgrade_automatic_cost || 10.00;
+            highestCash = data.highest_cash || 0;
+            netCash = data.net_cash || 0;
+            totalHoursPlayed = data.total_hours_played || 0;
+            updateDisplay();
+        }
+    }
+}
+
+async function saveUserGameData() {
+    if (!currentUser) return;
+
+    const { error } = await supabase
+        .from('game_data')
+        .upsert({
+            user_id: currentUser.id,
+            cash,
+            cash_per_click: cashPerClick,
+            cash_per_second: cashPerSecond,
+            upgrade_click_cost: upgradeClickCost,
+            upgrade_automatic_cost: upgradeAutomaticCost,
+            highest_cash: highestCash,
+            net_cash: netCash,
+            total_hours_played: totalHoursPlayed
+        });
+
+    if (error) {
+        console.error('Error saving game data:', error.message);
+    }
+}
+
 window.onload = () => {
     const savedState = localStorage.getItem('gameState');
     if (savedState) {
@@ -137,13 +214,13 @@ closeSettings.addEventListener('click', () => {
 
 document.getElementById('statsButton').addEventListener('click', () => {
     statsOverlay.style.display = 'flex';
-    updateDisplay();
 });
 
 closeStats.addEventListener('click', () => {
     statsOverlay.style.display = 'none';
 });
 
+// Reset game progress confirmation
 resetProgressButton.addEventListener('click', () => {
     resetConfirmationOverlay.style.display = 'flex';
 });
@@ -161,9 +238,6 @@ confirmResetButton.addEventListener('click', () => {
     highestCash = 0;
     netCash = 0;
     totalHoursPlayed = 0;
-
-    localStorage.removeItem('gameState');
-
     updateDisplay();
     resetConfirmationOverlay.style.display = 'none';
 });
@@ -172,49 +246,4 @@ cancelResetButton.addEventListener('click', () => {
     resetConfirmationOverlay.style.display = 'none';
 });
 
-// Login/Register pop-up
-loginRegisterButton.addEventListener('click', () => {
-    loginRegisterOverlay.style.display = 'flex';
-});
-
-closeLoginRegister.addEventListener('click', () => {
-    loginRegisterOverlay.style.display = 'none';
-});
-
-// Login button click event
-loginButton.addEventListener('click', async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    
-    // Call Supabase to log in the user
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
-    
-    if (error) {
-        alert('Login failed: ' + error.message);
-    } else {
-        alert('Login successful!');
-        // Handle successful login (e.g., save session, update UI)
-    }
-});
-
-// Register button click event
-registerButton.addEventListener('click', async () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    
-    // Call Supabase to register a new user
-    const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password
-    });
-    
-    if (error) {
-        alert('Registration failed: ' + error.message);
-    } else {
-        alert('Registration successful!');
-        // Handle successful registration (e.g., log in the user automatically)
-    }
-});
+setInterval(saveUserGameData, 10000); // Save game data to Supabase every 10 seconds
