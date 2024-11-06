@@ -1,88 +1,137 @@
-// Initialize Supabase
-const supabaseUrl = 'https://yesyeuzhiftumudfbsam.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inllc3lldXpoaWZ0dW11ZGZic2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA5MTI3MjYsImV4cCI6MjA0NjQ4ODcyNn0.xzkxofDA4E9hx3q6O3f4SDd0KK66YrbzqdpOmMzYvpM';
+// Assuming you're using environment variables in your build process
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Global user session
-let userSession = null;
-
-// Register function
-async function registerUser(email, password) {
-  const { user, error } = await supabase.auth.signUp({
+// Example function for user registration
+async function signUpUser(username, email, password) {
+  const { data, error } = await supabase.auth.signUp({
     email: email,
-    password: password,
+    password: password
   });
 
   if (error) {
-    console.error("Error registering:", error.message);
-    return;
+    console.error("Sign Up Error:", error.message);
+  } else {
+    console.log("User Signed Up:", data);
+    // After signing up, you can store the username in your database
+    // or perform other actions.
   }
-
-  console.log("Registration successful:", user);
-  loginUser(email, password);  // Automatically log the user in after successful registration
 }
 
-// Login function
+// Example function for user login
 async function loginUser(email, password) {
-  const { user, error } = await supabase.auth.signIn({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: email,
-    password: password,
+    password: password
   });
 
   if (error) {
-    console.error("Error logging in:", error.message);
-    return;
+    console.error("Login Error:", error.message);
+  } else {
+    console.log("User Logged In:", data);
   }
-
-  console.log("Login successful:", user);
-  userSession = user;  // Store the logged-in user
-  getGameData(user.id); // Fetch the user's game data
 }
 
-// Fetch user game data
-async function getGameData(userId) {
+// Function to create game data for a user
+async function createGameData(userId) {
+  const { data, error } = await supabase
+    .from('game_data')
+    .insert([
+      {
+        user_id: userId,
+        cash: 0,
+        score: 0,
+        highest_score: 0,
+      }
+    ]);
+
+  if (error) {
+    console.error("Error creating game data:", error.message);
+  } else {
+    console.log("Game Data Created:", data);
+  }
+}
+
+// Function to update game data (like cash, score, etc.)
+async function updateGameData(userId, newCash, newScore) {
+  const { data, error } = await supabase
+    .from('game_data')
+    .update({ cash: newCash, score: newScore })
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error("Error updating game data:", error.message);
+  } else {
+    console.log("Game Data Updated:", data);
+  }
+}
+
+// Function to fetch game data for a user
+async function fetchGameData(userId) {
   const { data, error } = await supabase
     .from('game_data')
     .select('*')
-    .eq('user_id', userId)
-    .single();
+    .eq('user_id', userId);
 
   if (error) {
     console.error("Error fetching game data:", error.message);
-    return;
-  }
-
-  console.log("Game data:", data);
-  updateGameUI(data);  // Update the UI with the fetched data
-}
-
-// Update the UI with fetched game data
-function updateGameUI(gameData) {
-  // Example of updating the UI (you can extend this)
-  document.getElementById("scoreDisplay").innerText = `Cash: $${gameData.cash || 0}`;
-}
-
-// Event listeners for login and registration buttons
-document.getElementById('registerButton').addEventListener('click', () => {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
-  registerUser(email, password);
-});
-
-document.getElementById('loginButton').addEventListener('click', () => {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
-  loginUser(email, password);
-});
-
-// Handle session state change (useful for page reloads)
-supabase.auth.onAuthStateChange((_event, session) => {
-  if (session) {
-    console.log("User is logged in:", session.user);
-    userSession = session.user;  // Store the logged-in user
-    getGameData(session.user.id); // Fetch game data for the logged-in user
   } else {
-    console.log("User is logged out.");
-    userSession = null;  // Clear session on logout
+    console.log("Fetched Game Data:", data);
+    return data[0]; // Assuming only one row of game data per user
+  }
+}
+
+// Example function to handle user sign-up on form submit
+document.getElementById('registerButton').addEventListener('click', async () => {
+  const email = document.getElementById('emailInput').value;
+  const password = document.getElementById('passwordInput').value;
+  const username = document.getElementById('usernameInput').value;
+
+  await signUpUser(username, email, password);
+  // After sign-up, create game data for the user
+  const user = supabase.auth.user(); // Get the current logged-in user
+  if (user) {
+    await createGameData(user.id);
   }
 });
+
+// Example function to handle user login
+document.getElementById('loginButton').addEventListener('click', async () => {
+  const email = document.getElementById('emailInput').value;
+  const password = document.getElementById('passwordInput').value;
+
+  await loginUser(email, password);
+  // After login, fetch game data for the user
+  const user = supabase.auth.user();
+  if (user) {
+    const gameData = await fetchGameData(user.id);
+    if (gameData) {
+      console.log("Game Data:", gameData);
+    }
+  }
+});
+
+// Function to handle user logout
+document.getElementById('logoutButton').addEventListener('click', async () => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Logout Error:", error.message);
+  } else {
+    console.log("User Logged Out");
+  }
+});
+
+// Event listener to trigger login/register overlay
+document.getElementById('loginRegisterButton').addEventListener('click', () => {
+  document.getElementById('loginRegisterOverlay').style.display = 'flex';
+});
+
+// Close login/register overlay
+document.getElementById('closeLoginRegister').addEventListener('click', () => {
+  document.getElementById('loginRegisterOverlay').style.display = 'none';
+});
+
+// Additional functionality like level creation and progress resets would go here
