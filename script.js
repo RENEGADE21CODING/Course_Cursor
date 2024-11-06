@@ -1,137 +1,180 @@
-// Assuming you're using environment variables in your build process
+// Initialize Supabase client
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-
+const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Example function for user registration
-async function signUpUser(username, email, password) {
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: password
-  });
+// DOM Elements
+const loginButton = document.getElementById('loginButton');
+const registerButton = document.getElementById('registerButton');
+const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
+const closeLoginRegister = document.getElementById('closeLoginRegister');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const upgradeClickButton = document.getElementById('upgradeClickButton');
+const upgradeAutomaticButton = document.getElementById('upgradeAutomaticButton');
+const clickCash = document.getElementById('clickCash');
+const statsButton = document.getElementById('statsButton');
+const settingsButton = document.getElementById('settingsButton');
+const closeSettings = document.getElementById('closeSettings');
+const levelDesignButton = document.getElementById('levelDesignButton');
+const resetProgressButton = document.getElementById('resetProgressButton');
 
-  if (error) {
-    console.error("Sign Up Error:", error.message);
-  } else {
-    console.log("User Signed Up:", data);
-    // After signing up, you can store the username in your database
-    // or perform other actions.
-  }
-}
+// Initial Game State
+const INITIAL_CASH = 0;  // Starting cash value
+const INITIAL_CASH_PER_CLICK = 0.5; // Cash earned per click
+const INITIAL_CASH_PER_SECOND = 0.25; // Cash earned per second
 
-// Example function for user login
-async function loginUser(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
-
-  if (error) {
-    console.error("Login Error:", error.message);
-  } else {
-    console.log("User Logged In:", data);
-  }
-}
-
-// Function to create game data for a user
-async function createGameData(userId) {
+// Handle Login
+loginButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+  
   const { data, error } = await supabase
-    .from('game_data')
+    .from('users')
+    .select('*')
+    .eq('username', username)
+    .eq('password', password)
+    .single();
+
+  if (error) {
+    alert('Login failed');
+  } else {
+    alert('Login successful');
+    scoreDisplay.textContent = `Cash: $${data.cash}`;
+    loginRegisterOverlay.style.display = 'none';
+  }
+});
+
+// Handle Registration
+registerButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+
+  const { data, error } = await supabase
+    .from('users')
     .insert([
-      {
-        user_id: userId,
-        cash: 0,
-        score: 0,
-        highest_score: 0,
-      }
+      { username: username, password: password, cash: INITIAL_CASH, cash_per_click: INITIAL_CASH_PER_CLICK, cash_per_second: INITIAL_CASH_PER_SECOND }
     ]);
 
   if (error) {
-    console.error("Error creating game data:", error.message);
+    alert('Registration failed');
   } else {
-    console.log("Game Data Created:", data);
+    alert('Registration successful');
+    loginRegisterOverlay.style.display = 'none';
   }
-}
+});
 
-// Function to update game data (like cash, score, etc.)
-async function updateGameData(userId, newCash, newScore) {
+// Open Login/Register overlay
+settingsButton.addEventListener('click', () => {
+  loginRegisterOverlay.style.display = 'flex';
+});
+
+// Close Login/Register overlay
+closeLoginRegister.addEventListener('click', () => {
+  loginRegisterOverlay.style.display = 'none';
+});
+
+// Handle Click for Cash
+clickCash.addEventListener('click', async () => {
+  const username = usernameInput.value;
+  
+  // Get user data from Supabase
   const { data, error } = await supabase
-    .from('game_data')
-    .update({ cash: newCash, score: newScore })
-    .eq('user_id', userId);
-
-  if (error) {
-    console.error("Error updating game data:", error.message);
-  } else {
-    console.log("Game Data Updated:", data);
-  }
-}
-
-// Function to fetch game data for a user
-async function fetchGameData(userId) {
-  const { data, error } = await supabase
-    .from('game_data')
+    .from('users')
     .select('*')
-    .eq('user_id', userId);
+    .eq('username', username)
+    .single();
 
   if (error) {
-    console.error("Error fetching game data:", error.message);
-  } else {
-    console.log("Fetched Game Data:", data);
-    return data[0]; // Assuming only one row of game data per user
+    alert('Error fetching user data');
+    return;
   }
-}
 
-// Example function to handle user sign-up on form submit
-document.getElementById('registerButton').addEventListener('click', async () => {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
-  const username = document.getElementById('usernameInput').value;
-
-  await signUpUser(username, email, password);
-  // After sign-up, create game data for the user
-  const user = supabase.auth.user(); // Get the current logged-in user
-  if (user) {
-    await createGameData(user.id);
-  }
+  const newCash = data.cash + data.cash_per_click; // Add cash per click to current cash
+  await supabase
+    .from('users')
+    .update({ cash: newCash })
+    .eq('username', username);
+  
+  scoreDisplay.textContent = `Cash: $${newCash.toFixed(2)}`;
 });
 
-// Example function to handle user login
-document.getElementById('loginButton').addEventListener('click', async () => {
-  const email = document.getElementById('emailInput').value;
-  const password = document.getElementById('passwordInput').value;
+// Upgrade Functions (Click per Click & Click per Second)
+upgradeClickButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
 
-  await loginUser(email, password);
-  // After login, fetch game data for the user
-  const user = supabase.auth.user();
-  if (user) {
-    const gameData = await fetchGameData(user.id);
-    if (gameData) {
-      console.log("Game Data:", gameData);
-    }
-  }
-});
-
-// Function to handle user logout
-document.getElementById('logoutButton').addEventListener('click', async () => {
-  const { error } = await supabase.auth.signOut();
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('username', username)
+    .single();
 
   if (error) {
-    console.error("Logout Error:", error.message);
+    alert('Error fetching user data');
+    return;
+  }
+
+  const newCashPerClick = data.cash_per_click + 0.5; // Increase cash per click by 0.5
+  await supabase
+    .from('users')
+    .update({ cash_per_click: newCashPerClick })
+    .eq('username', username);
+
+  alert('Cash per Click upgraded!');
+});
+
+// Automatic Cash Generation Upgrade
+upgradeAutomaticButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('username', username)
+    .single();
+
+  if (error) {
+    alert('Error fetching user data');
+    return;
+  }
+
+  const newCashPerSecond = data.cash_per_second + 0.25; // Increase cash per second by 0.25
+  await supabase
+    .from('users')
+    .update({ cash_per_second: newCashPerSecond })
+    .eq('username', username);
+
+  alert('Cash per Second upgraded!');
+});
+
+// Open Stats Overlay
+statsButton.addEventListener('click', () => {
+  alert('Stats view not yet implemented');
+});
+
+// Open Settings Overlay
+settingsButton.addEventListener('click', () => {
+  loginRegisterOverlay.style.display = 'flex';
+});
+
+// Close Settings Overlay
+closeSettings.addEventListener('click', () => {
+  loginRegisterOverlay.style.display = 'none';
+});
+
+// Reset Game Progress
+resetProgressButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+
+  const { data, error } = await supabase
+    .from('users')
+    .update({ cash: INITIAL_CASH, cash_per_click: INITIAL_CASH_PER_CLICK, cash_per_second: INITIAL_CASH_PER_SECOND })
+    .eq('username', username);
+
+  if (error) {
+    alert('Error resetting progress');
   } else {
-    console.log("User Logged Out");
+    alert('Progress reset successfully!');
   }
 });
-
-// Event listener to trigger login/register overlay
-document.getElementById('loginRegisterButton').addEventListener('click', () => {
-  document.getElementById('loginRegisterOverlay').style.display = 'flex';
-});
-
-// Close login/register overlay
-document.getElementById('closeLoginRegister').addEventListener('click', () => {
-  document.getElementById('loginRegisterOverlay').style.display = 'none';
-});
-
-// Additional functionality like level creation and progress resets would go here
