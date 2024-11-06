@@ -1,184 +1,228 @@
-// Fetch values from environment variables (this is if you're using a build tool like Vite/Webpack)
-const supabaseUrl = 'https://yesyeuzhiftumudfbsam.supabase.co';  // Replace with your Supabase URL from .env
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inllc3lldXpoaWZ0dW11ZGZic2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA5MTI3MjYsImV4cCI6MjA0NjQ4ODcyNn0.xzkxofDA4E9hx3q6O3f4SDd0KK66YrbzqdpOmMzYvpM';  // Replace with your Supabase anon key from .env
-
-// Initialize the Supabase client
+// Initialize Supabase
+const supabaseUrl = 'https://yesyeuzhiftumudfbsam.supabase.co'; // Replace with your Supabase URL
+const supabaseKey = 'your-supabase-anon-key-here'; // Replace with your Supabase anon key
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Select DOM elements for the game
+// DOM Elements
 const scoreDisplay = document.getElementById('scoreDisplay');
 const upgradeClickButton = document.getElementById('upgradeClickButton');
 const upgradeAutomaticButton = document.getElementById('upgradeAutomaticButton');
 const clickCash = document.getElementById('clickCash');
-
-// Declare initial values for the game
-let score = parseFloat(localStorage.getItem('score')) || 0.00;
-let cashPerClick = parseFloat(localStorage.getItem('cashPerClick')) || 0.50;
-let cashPerSecond = parseFloat(localStorage.getItem('cashPerSecond')) || 0.25;
-let clickUpgradeCost = 10.00;
-let automaticUpgradeCost = 10.00;
-
-// Update the displayed score and upgrade info
-function updateDisplay() {
-  scoreDisplay.textContent = `Cash: $${score.toFixed(2)}`;
-  document.getElementById('clickInfo').textContent = `Current Cash Per Click: $${cashPerClick.toFixed(2)}`;
-  document.getElementById('automaticInfo').textContent = `Current Cash Per Second: $${cashPerSecond.toFixed(2)}`;
-}
-
-// Save current game state to localStorage
-function saveGameState() {
-  localStorage.setItem('score', score.toString());
-  localStorage.setItem('cashPerClick', cashPerClick.toString());
-  localStorage.setItem('cashPerSecond', cashPerSecond.toString());
-}
-
-// Function to handle the click action (earn money)
-clickCash.addEventListener('click', () => {
-  score += cashPerClick;
-  saveGameState();
-  updateDisplay();
-});
-
-// Function to handle the click upgrade (increase cash per click)
-upgradeClickButton.addEventListener('click', () => {
-  if (score >= clickUpgradeCost) {
-    score -= clickUpgradeCost;
-    cashPerClick += 0.50; // Increase by 0.50 per click
-    clickUpgradeCost *= 1.5; // Increase upgrade cost by 50%
-    saveGameState();
-    updateDisplay();
-  } else {
-    alert('Not enough cash for this upgrade!');
-  }
-});
-
-// Function to handle the automatic upgrade (increase cash per second)
-upgradeAutomaticButton.addEventListener('click', () => {
-  if (score >= automaticUpgradeCost) {
-    score -= automaticUpgradeCost;
-    cashPerSecond += 0.25; // Increase by 0.25 per second
-    automaticUpgradeCost *= 1.5; // Increase upgrade cost by 50%
-    saveGameState();
-    updateDisplay();
-  } else {
-    alert('Not enough cash for this upgrade!');
-  }
-});
-
-// Function to earn money automatically over time (based on cash per second)
-function earnCashAutomatically() {
-  score += cashPerSecond;
-  saveGameState();
-  updateDisplay();
-}
-
-// Set an interval to earn money every second (this could be a longer interval if desired)
-setInterval(earnCashAutomatically, 1000);
-
-// Supabase Authentication: Login and Register
-const loginButton = document.getElementById('loginButton');
-const registerButton = document.getElementById('registerButton');
+const statsButton = document.getElementById('statsButton');
+const settingsButton = document.getElementById('settingsButton');
+const loginRegisterButton = document.getElementById('loginRegisterButton');
+const closeSettings = document.getElementById('closeSettings');
+const loginRegisterOverlay = document.getElementById('loginRegisterOverlay');
+const closeLoginRegister = document.getElementById('closeLoginRegister');
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
-const emailInput = document.getElementById('emailInput'); // New email input for registration
+const loginButton = document.getElementById('loginButton');
+const registerButton = document.getElementById('registerButton');
 
-loginButton.addEventListener('click', async (event) => {
-  event.preventDefault();
+// Variables
+let score = 0;
+let cashPerClick = 0.5;
+let cashPerSecond = 0.25;
+let upgradeClickCost = 10;
+let upgradeAutomaticCost = 10;
+let userData = null;
 
-  const email = emailInput.value;
-  const password = passwordInput.value;
+// Load stored data from local storage
+function loadGameData() {
+  const savedScore = localStorage.getItem('score');
+  const savedCashPerClick = localStorage.getItem('cashPerClick');
+  const savedCashPerSecond = localStorage.getItem('cashPerSecond');
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password,
-  });
+  if (savedScore) {
+    score = parseFloat(savedScore);
+  }
+  if (savedCashPerClick) {
+    cashPerClick = parseFloat(savedCashPerClick);
+  }
+  if (savedCashPerSecond) {
+    cashPerSecond = parseFloat(savedCashPerSecond);
+  }
 
-  if (error) {
-    console.error("Login Error:", error.message);
-    alert("Error: " + error.message);
-  } else {
-    console.log("Logged in successfully:", data);
-    alert("Logged in successfully!");
+  updateScoreDisplay();
+}
+
+// Save data to local storage
+function saveGameData() {
+  localStorage.setItem('score', score);
+  localStorage.setItem('cashPerClick', cashPerClick);
+  localStorage.setItem('cashPerSecond', cashPerSecond);
+}
+
+// Update the score display on the page
+function updateScoreDisplay() {
+  scoreDisplay.innerText = `Cash: $${score.toFixed(2)}`;
+}
+
+// Handle clicking for cash
+clickCash.addEventListener('click', () => {
+  score += cashPerClick;
+  updateScoreDisplay();
+  saveGameData();
+});
+
+// Handle the "Buy More Cash Per Click" upgrade
+upgradeClickButton.addEventListener('click', () => {
+  if (score >= upgradeClickCost) {
+    score -= upgradeClickCost;
+    cashPerClick *= 2;
+    upgradeClickCost *= 1.5; // Increase the cost for the next upgrade
+    updateScoreDisplay();
+    saveGameData();
+    upgradeClickButton.innerText = `Buy More Cash Per Click (Cost: $${upgradeClickCost.toFixed(2)})`;
   }
 });
 
-registerButton.addEventListener('click', async (event) => {
-  event.preventDefault();
-
-  const email = emailInput.value;
-  const password = passwordInput.value;
-
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: password,
-  });
-
-  if (error) {
-    console.error("Registration Error:", error.message);
-    alert("Error: " + error.message);
-  } else {
-    console.log("User Registered successfully:", data);
-    alert("User Registered successfully! Please check your email to verify.");
+// Handle the "Buy More Cash Per Second" upgrade
+upgradeAutomaticButton.addEventListener('click', () => {
+  if (score >= upgradeAutomaticCost) {
+    score -= upgradeAutomaticCost;
+    cashPerSecond *= 2;
+    upgradeAutomaticCost *= 1.5; // Increase the cost for the next upgrade
+    updateScoreDisplay();
+    saveGameData();
+    upgradeAutomaticButton.innerText = `Buy More Cash Per Second (Cost: $${upgradeAutomaticCost.toFixed(2)})`;
   }
 });
 
-// Add logic for logging out the user (if needed)
-async function logout() {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.error("Logout Error:", error.message);
-    alert("Error logging out: " + error.message);
-  } else {
-    console.log("Logged out successfully.");
-    alert("Logged out successfully!");
+// Automatic income generation
+setInterval(() => {
+  score += cashPerSecond;
+  updateScoreDisplay();
+  saveGameData();
+}, 1000);
+
+// Show/hide settings
+settingsButton.addEventListener('click', () => {
+  document.getElementById('settingsOverlay').style.display = 'flex';
+});
+
+closeSettings.addEventListener('click', () => {
+  document.getElementById('settingsOverlay').style.display = 'none';
+});
+
+// Login/Register buttons
+loginRegisterButton.addEventListener('click', () => {
+  loginRegisterOverlay.style.display = 'flex';
+});
+
+closeLoginRegister.addEventListener('click', () => {
+  loginRegisterOverlay.style.display = 'none';
+});
+
+// Login functionality
+loginButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+
+  if (!username || !password) {
+    alert('Please enter both username and password');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .eq('password', password)
+      .single();
+
+    if (error) {
+      alert('Invalid username or password');
+      return;
+    }
+
+    userData = data;
+    alert('Login successful!');
+    loginRegisterOverlay.style.display = 'none';
+    loadUserData();
+  } catch (error) {
+    console.error('Error logging in:', error);
+  }
+});
+
+// Register functionality
+registerButton.addEventListener('click', async () => {
+  const username = usernameInput.value;
+  const password = passwordInput.value;
+
+  if (!username || !password) {
+    alert('Please enter both username and password');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .insert([{ username, password }])
+      .single();
+
+    if (error) {
+      alert('Error registering user');
+      return;
+    }
+
+    alert('Registration successful! Please log in.');
+    usernameInput.value = '';
+    passwordInput.value = '';
+    loginRegisterOverlay.style.display = 'none';
+  } catch (error) {
+    console.error('Error registering:', error);
+  }
+});
+
+// Load user data after successful login
+async function loadUserData() {
+  if (userData) {
+    try {
+      const { data, error } = await supabase
+        .from('game_data')
+        .select('*')
+        .eq('user_id', userData.id)
+        .single();
+
+      if (error) {
+        console.log('No game data found for user.');
+        return;
+      }
+
+      // Update the local game state with the data from Supabase
+      score = data.score;
+      cashPerClick = data.cash_per_click;
+      cashPerSecond = data.cash_per_second;
+      updateScoreDisplay();
+      saveGameData();
+    } catch (error) {
+      console.error('Error loading game data:', error);
+    }
   }
 }
 
-// Example: Function to update user game data (e.g., score)
-async function updateGameData(userId, score) {
-  const { data, error } = await supabase
-    .from('game_data')
-    .upsert([
-      { user_id: userId, score: score }
-    ]);
+// Sync game data to Supabase when the game is saved
+async function saveGameDataToSupabase() {
+  if (userData) {
+    try {
+      const { data, error } = await supabase
+        .from('game_data')
+        .upsert([{ user_id: userData.id, score, cash_per_click: cashPerClick, cash_per_second: cashPerSecond }])
+        .single();
 
-  if (error) {
-    console.error("Game Data Update Error:", error.message);
-    alert("Error updating game data: " + error.message);
-  } else {
-    console.log("Game data updated:", data);
-    alert("Game data updated successfully!");
+      if (error) {
+        console.error('Error saving game data to Supabase:', error);
+      }
+    } catch (error) {
+      console.error('Error saving game data:', error);
+    }
   }
 }
 
-// Example: Function to retrieve game data for a specific user
-async function getGameData(userId) {
-  const { data, error } = await supabase
-    .from('game_data')
-    .select('*')
-    .eq('user_id', userId);
+// Auto-sync data every minute
+setInterval(saveGameDataToSupabase, 60000);
 
-  if (error) {
-    console.error("Error retrieving game data:", error.message);
-  } else {
-    console.log("Game data retrieved:", data);
-  }
-}
-
-// Example usage of retrieving the current user's session
-async function getCurrentUser() {
-  const user = supabase.auth.user();
-  if (user) {
-    console.log("Current user:", user);
-    // You can then use the user's ID for game data
-    await getGameData(user.id);
-  } else {
-    console.log("No user is logged in.");
-  }
-}
-
-// Call this function to check the current user's session when the page loads
-getCurrentUser();
-
-// Call the updateDisplay function to update the page with initial values
-updateDisplay();
+// Initialize the game data
+loadGameData();
