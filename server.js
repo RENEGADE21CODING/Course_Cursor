@@ -1,6 +1,8 @@
+// server.js
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -10,6 +12,9 @@ app.use(express.json());
 
 // Initialize Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // API route to get game data
 app.get('/api/game', async (req, res) => {
