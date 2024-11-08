@@ -114,7 +114,7 @@
 
   <script>
     // Number of falling items
-    const numberOfFallingItems = 25; 
+    const numberOfFallingItems = 25;
 
     // Array of images to fall
     const images = [
@@ -134,12 +134,15 @@
       img.src = images[Math.floor(Math.random() * images.length)];
       img.classList.add('falling-item');
 
-      // Random size, position, and animation duration for depth effect
-      img.style.width = `${random(20, 50)}px`;
+      // Random size, position, opacity, z-index, and animation duration for depth effect
+      const size = random(20, 100);  // Maximum size doubled to 100px
+      const opacity = random(0.5, 1);
+      img.style.width = `${size}px`;
       img.style.left = `${random(0, 100)}vw`;
       img.style.animationDuration = `${random(5, 15)}s`;
-      img.style.opacity = random(0.5, 1);
-      img.style.filter = `brightness(${random(0.5, 1.2)})`;
+      img.style.opacity = opacity;
+      img.style.filter = `brightness(${opacity})`;
+      img.style.zIndex = Math.floor(opacity * 10);  // Higher opacity => Higher z-index
 
       // Append to the container
       container.appendChild(img);
