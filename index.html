@@ -3,11 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Course Cursor!</title>
+  <title>Course Cursor</title>
+  <link rel="icon" href="https://github.com/RENEGADE21CODING/Course_Cursor/blob/gh-pages/CursorCoin.png?raw=true" type="image/png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #f4f4f9;
+      color: #333;
+      text-align: center;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 50px 20px;
+      background-color: #4b79a1;
+      background-image: linear-gradient(315deg, #4b79a1 0%, #283e51 74%);
+      color: #fff;
+    }
+
+    .hero h1 {
+      font-size: 3em;
+      margin: 0;
+    }
+
+    .hero p {
+      font-size: 1.2em;
+      margin: 20px 0;
+    }
+
+    .hero .cta-buttons {
+      margin-top: 30px;
+    }
+
+    .cta-button {
+      text-decoration: none;
+      font-weight: 600;
+      color: #fff;
+      background-color: #ff4d4d;
+      padding: 15px 30px;
+      margin: 10px;
+      border-radius: 25px;
+      transition: 0.3s;
+      font-size: 1em;
+    }
+
+    .cta-button:hover {
+      background-color: #ff3333;
+    }
+
+    /* Features Section */
+    .features {
+      padding: 50px 20px;
+      background-color: #f4f4f9;
+    }
+
+    .features h2 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .feature-list {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .feature {
+      flex: 1 1 250px;
+      background: #fff;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: 0.3s;
+    }
+
+    .feature:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .feature h3 {
+      font-size: 1.5em;
+      color: #4b79a1;
+    }
+
+    .feature p {
+      font-size: 1em;
+      color: #555;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px;
+      background-color: #283e51;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to Course Cursor</h1>
-  <p>Click below to play the game:</p>
-  <a href="https://course-cursor.onrender.com" target="_blank">Play Course Cursor</a>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Welcome to Course Cursor</h1>
+    <p>The Ultimate Platform Clicker Game Adventure</p>
+    <div class="cta-buttons">
+      <a href="https://course-cursor.onrender.com" class="cta-button">Play Now</a>
+      <a href="#features" class="cta-button">Learn More</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <h2>Why You’ll Love Course Cursor</h2>
+    <div class="feature-list">
+      <div class="feature">
+        <h3>Engaging Gameplay</h3>
+        <p>Enjoy an innovative mix of platforming and clicker mechanics that keeps you entertained for hours.</p>
+      </div>
+      <div class="feature">
+        <h3>Customize & Create</h3>
+        <p>Build and share your own levels for endless replayability, and explore creations by other players.</p>
+      </div>
+      <div class="feature">
+        <h3>Progress & Compete</h3>
+        <p>Upgrade your skills, collect rewards, and challenge friends to see who dominates the leaderboards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Course Cursor. All rights reserved.</p>
+  </footer>
+
 </body>
 </html>
