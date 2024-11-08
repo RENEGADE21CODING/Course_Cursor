@@ -52,19 +52,9 @@
       }
     }
 
-    /* Rotation animation */
-    @keyframes rotate {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
     .falling-item {
       position: absolute;
-      animation: fall linear infinite, rotate linear infinite;
+      animation: fall linear infinite;
       will-change: transform, opacity;
       width: 30px;
       height: auto;
@@ -197,10 +187,10 @@
       img.src = images[Math.floor(Math.random() * images.length)];
       img.classList.add('falling-item');
 
-      // Random size, position, animation duration, opacity, and rotation speed for depth effect
+      // Random size, position, and animation duration for depth effect
       img.style.width = `${random(30, 60)}px`;
       img.style.left = `${random(0, 100)}vw`;
-      img.style.animationDuration = `${random(5, 15)}s, ${random(4, 10)}s`;  // Randomize fall and rotation speed
+      img.style.animationDuration = `${random(5, 15)}s`;
       img.style.opacity = random(0.5, 1);
       img.style.filter = `brightness(${random(0.5, 1.2)})`;
 
