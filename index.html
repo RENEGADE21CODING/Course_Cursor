@@ -7,6 +7,7 @@
   <link rel="icon" href="https://github.com/RENEGADE21CODING/Platicker-A_Platform_Clicker_Game/blob/main/CursorCoin.png?raw=true" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
+    /* Basic Reset */
     * {
       margin: 0;
       padding: 0;
@@ -46,16 +47,11 @@
       100% { transform: translateY(100vh) rotate(360deg); }
     }
 
-    .falling-item {
-      position: absolute;
-      animation: fall linear infinite;
-      will-change: transform, opacity;
-    }
-
-    /* Main Container */
+    /* Main Content */
     .container {
       max-width: 600px;
       text-align: center;
+      animation: fadeIn 1.5s ease;
     }
 
     /* Header */
@@ -64,22 +60,24 @@
       font-weight: 600;
       margin-bottom: 20px;
       text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+      color: #ffd700;
     }
 
     /* Features Section */
     .features p {
-      font-size: 1.2em;
+      font-size: 1.1em;
       margin: 10px 0;
       color: #e0e0e0;
       text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+      line-height: 1.6em;
     }
 
     /* Button */
     .play-button {
       display: inline-block;
       padding: 15px 30px;
-      background-color: #ffcc00;
-      color: #333;
+      background-color: #29a19c;
+      color: #fff;
       font-size: 1.2em;
       font-weight: bold;
       text-decoration: none;
@@ -89,8 +87,14 @@
     }
 
     .play-button:hover {
-      background-color: #ffaa00;
+      background-color: #218b84;
       transform: scale(1.05);
+    }
+
+    /* Fade-in animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -101,13 +105,14 @@
 
   <!-- Main Content Container -->
   <div class="container">
-    <h1>Welcome to Course Cursor</h1>
+    <h1>Course Cursor</h1>
     <div class="features">
-      <p>Click your way to earn cash and upgrade your click power!</p>
-      <p>Design custom levels and challenge other players!</p>
-      <p>Track your stats and become the top earner!</p>
+      <p>🖱️ Tap into the thrill of earning cash with every click!</p>
+      <p>🛠️ Upgrade and customize your experience as you climb to wealth!</p>
+      <p>🏆 Challenge yourself: Design and share levels with friends and competitors worldwide.</p>
+      <p>📈 Track stats, rise to the top, and become the ultimate cursor master!</p>
     </div>
-    <a href="https://course-cursor.onrender.com" class="play-button">Play Now</a>
+    <a href="https://course-cursor.onrender.com" class="play-button">Start Clicking</a>
   </div>
 
   <script>
@@ -126,11 +131,19 @@
       const img = document.createElement('img');
       img.src = images[Math.floor(Math.random() * images.length)];
       img.classList.add('falling-item');
+
+      // Set random size, position, opacity, brightness, and speeds for depth effect
       img.style.width = `${random(20, 60)}px`;
       img.style.left = `${random(0, 100)}vw`;
-      img.style.animationDuration = `${random(7, 15)}s`;
       img.style.opacity = random(0.5, 1);
       img.style.filter = `brightness(${random(0.5, 1.2)})`;
+
+      // Set random fall duration and rotation speed
+      const fallDuration = random(7, 15);
+      const rotationSpeed = random(5, 10);
+      img.style.animation = `fall ${fallDuration}s linear infinite, 
+                             fall ${rotationSpeed}s linear infinite`;
+
       container.appendChild(img);
     }
   </script>
