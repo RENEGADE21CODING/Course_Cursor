@@ -9,20 +9,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files
-app.use(express.static('public')); // Place HTML, CSS, and JS files in a 'public' folder
+// Middleware to parse JSON requests
+app.use(express.json());
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public'))); // Ensure Express serves files from the 'public' folder
 
 // Initialize Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-<<<<<<< HEAD
-// API routes...
-=======
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-
 // API route to get game data
->>>>>>> fceefd2a6b35fac0a29d92e0225af9842dbb1298
 app.get('/api/game', async (req, res) => {
   const { data, error } = await supabase
     .from('game_data')
@@ -33,6 +29,7 @@ app.get('/api/game', async (req, res) => {
   res.json(data);
 });
 
+// API route to update game data
 app.post('/api/game', async (req, res) => {
   const { user_id, cash, cash_per_click, cash_per_second } = req.body;
 
