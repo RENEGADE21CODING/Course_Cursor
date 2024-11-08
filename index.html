@@ -52,6 +52,16 @@
       }
     }
 
+    /* Rotation animation */
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
     .falling-item {
       position: absolute;
       animation: fall linear infinite;
@@ -60,6 +70,12 @@
       height: auto;
       opacity: 0.8;
       filter: brightness(1.5);
+    }
+
+    /* Additional rotation for ClickCursorCash items */
+    .click-cursor-cash {
+      animation: fall linear infinite, rotate linear infinite;
+      animation-duration: 5s, random(2, 6)s; /* Adjust rotation speed */
     }
 
     /* Fade-in Effect */
@@ -193,6 +209,11 @@
       img.style.animationDuration = `${random(5, 15)}s`;
       img.style.opacity = random(0.5, 1);
       img.style.filter = `brightness(${random(0.5, 1.2)})`;
+
+      // Apply rotation for ClickCursorCash images
+      if (img.src.includes('ClickCursorCash')) {
+        img.classList.add('click-cursor-cash');
+      }
 
       // Append to the container
       container.appendChild(img);
