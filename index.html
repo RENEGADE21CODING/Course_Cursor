@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Course Cursor</title>
   <link rel="icon" href="https://github.com/RENEGADE21CODING/Platicker-A_Platform_Clicker_Game/blob/main/CursorCoin.png?raw=true" type="image/png">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     /* Basic Reset */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Poppins', Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
     }
 
     /* Body Styling */
@@ -25,8 +24,8 @@
       color: #fff;
       overflow: hidden;
       position: relative;
-      padding: 20px;
-      text-align: center;
+      font-family: 'Arial', sans-serif;
+      letter-spacing: 0.5px;
     }
 
     /* Falling effect container */
@@ -43,69 +42,98 @@
 
     /* Falling animation */
     @keyframes fall {
-      0% { transform: translateY(-100px) rotate(0deg); }
-      100% { transform: translateY(100vh) rotate(360deg); }
+      from {
+        transform: translateY(-100px);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
     }
 
-    /* Main Content */
+    .falling-item {
+      position: absolute;
+      animation: fall linear infinite;
+      will-change: transform, opacity;
+    }
+
+    /* Main Container */
     .container {
-      max-width: 600px;
       text-align: center;
-      animation: fadeIn 1.5s ease;
+      max-width: 700px;
+      margin: 0 20px;
     }
 
     /* Header */
     h1 {
-      font-size: 3.2em;
-      font-weight: 600;
+      font-size: 3.5em;
+      font-weight: bold;
+      text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
       margin-bottom: 20px;
-      color: #ffdd57;
-      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     /* Features Section */
-    .features p {
-      font-size: 1.1em;
-      margin: 10px 0;
-      color: #e0e0e0;
-      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
-      line-height: 1.6em;
+    .features {
+      font-size: 1.25em;
+      line-height: 1.6;
+      margin-bottom: 40px;
     }
 
-    /* Button */
+    .features p {
+      margin: 15px 0;
+      color: #e0e0e0;
+    }
+
+    .features p strong {
+      color: #ffcc00;
+    }
+
+    /* Play Button */
     .play-button {
       display: inline-block;
-      padding: 15px 30px;
-      background: linear-gradient(45deg, #28a745, #ff8c00, #007bff);
+      padding: 20px 40px;
+      background: linear-gradient(45deg, #ff0044, #00b7ff, #9d00ff, #ff9a00, #8eff00);
       background-size: 400% 400%;
       color: #fff;
-      font-size: 1.3em;
+      font-size: 1.5em;
       font-weight: bold;
       text-decoration: none;
-      border-radius: 8px;
-      box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s;
-      animation: gradientShift 6s ease infinite;
+      border-radius: 10px;
+      transition: background 1s, transform 0.3s, box-shadow 0.3s ease-in-out;
+      background-position: 0 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     }
 
-    /* Gradient animation */
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* Hover effects */
     .play-button:hover {
-      transform: scale(1.15);
-      box-shadow: 4px 6px 15px rgba(255, 255, 255, 0.6);
-      filter: brightness(1.3);
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(255, 255, 255, 0.3);
     }
 
-    /* Fade-in animation */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Play Button Gradient Animation */
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0 50%;
+      }
+    }
+
+    .play-button {
+      animation: gradientAnimation 5s ease infinite;
+    }
+
+    /* Animation for falling items */
+    .falling-item {
+      width: 30px;
+      height: 30px;
+      opacity: 0.8;
+      filter: brightness(1.5);
     }
   </style>
 </head>
@@ -116,43 +144,45 @@
 
   <!-- Main Content Container -->
   <div class="container">
-    <h1>Course Cursor</h1>
+    <h1>Welcome to Course Cursor</h1>
     <div class="features">
-      <p>✨ Click your way to wealth in a thrilling adventure!</p>
-      <p>🛠️ Upgrade, customize, and conquer with each level.</p>
-      <p>🌐 Compete globally: Design and share levels to challenge friends.</p>
-      <p>📈 Track stats, rise to the top, and claim your place among the best!</p>
+      <p><strong>Earn</strong> cash with every click and power up your abilities!</p>
+      <p><strong>Create</strong> custom levels and challenge players worldwide!</p>
+      <p><strong>Track</strong> your progress and become the <strong>top earner!</strong></p>
     </div>
-    <a href="https://course-cursor.onrender.com" class="play-button">Start Playing Now</a>
+    <a href="https://course-cursor.onrender.com" class="play-button">Start Your Adventure</a>
   </div>
 
   <script>
-    const numberOfFallingItems = 30; 
+    // Number of falling items
+    const numberOfFallingItems = 30;
+
+    // Array of images to fall
     const images = [
       'https://github.com/RENEGADE21CODING/Platicker-A_Platform_Clicker_Game/blob/main/ClickCursorCash.png?raw=true',
       'https://github.com/RENEGADE21CODING/Platicker-A_Platform_Clicker_Game/blob/main/CursorCoin.png?raw=true'
     ];
 
+    // Function to generate a random number between min and max
     function random(min, max) {
       return Math.random() * (max - min) + min;
     }
 
+    // Generate falling items
     const container = document.getElementById('fallingContainer');
     for (let i = 0; i < numberOfFallingItems; i++) {
       const img = document.createElement('img');
       img.src = images[Math.floor(Math.random() * images.length)];
       img.classList.add('falling-item');
 
-      img.style.width = `${random(20, 60)}px`;
+      // Random size, position, and animation duration for depth effect
+      img.style.width = `${random(30, 60)}px`;
       img.style.left = `${random(0, 100)}vw`;
-      img.style.opacity = random(0.5, 0.9);
-      img.style.filter = `brightness(${random(0.6, 1.3)})`;
+      img.style.animationDuration = `${random(5, 15)}s`;
+      img.style.opacity = random(0.5, 1);
+      img.style.filter = `brightness(${random(0.5, 1.2)})`;
 
-      const fallDuration = random(7, 15);
-      const rotationSpeed = random(5, 10);
-      img.style.animation = `fall ${fallDuration}s linear infinite, 
-                             fall ${rotationSpeed}s linear infinite`;
-
+      // Append to the container
       container.appendChild(img);
     }
   </script>
