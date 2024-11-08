@@ -1,4 +1,4 @@
-// server.js
+// server.js 
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 const dotenv = require('dotenv');
@@ -7,13 +7,10 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT; // Use only process.env.PORT
 
-// Middleware to parse JSON requests
-app.use(express.json());
-
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public'))); // Ensure Express serves files from the 'public' folder
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Initialize Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -29,7 +26,6 @@ app.get('/api/game', async (req, res) => {
   res.json(data);
 });
 
-// API route to update game data
 app.post('/api/game', async (req, res) => {
   const { user_id, cash, cash_per_click, cash_per_second } = req.body;
 
