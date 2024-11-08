@@ -56,11 +56,11 @@
 
     /* Header */
     h1 {
-      font-size: 3em;
+      font-size: 3.2em;
       font-weight: 600;
       margin-bottom: 20px;
-      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
-      color: #ffd700;
+      color: #ffdd57;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     /* Features Section */
@@ -76,15 +76,15 @@
     .play-button {
       display: inline-block;
       padding: 15px 30px;
-      background: linear-gradient(45deg, #29a19c, #1e90ff, #ff8c00);
-      background-size: 300% 300%;
+      background: linear-gradient(45deg, #28a745, #ff8c00, #007bff);
+      background-size: 400% 400%;
       color: #fff;
-      font-size: 1.2em;
+      font-size: 1.3em;
       font-weight: bold;
       text-decoration: none;
-      border-radius: 5px;
+      border-radius: 8px;
       box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s;
       animation: gradientShift 6s ease infinite;
     }
 
@@ -97,9 +97,9 @@
 
     /* Hover effects */
     .play-button:hover {
-      transform: scale(1.1);
-      box-shadow: 4px 6px 15px rgba(255, 255, 255, 0.5);
-      filter: brightness(1.2);
+      transform: scale(1.15);
+      box-shadow: 4px 6px 15px rgba(255, 255, 255, 0.6);
+      filter: brightness(1.3);
     }
 
     /* Fade-in animation */
@@ -118,16 +118,16 @@
   <div class="container">
     <h1>Course Cursor</h1>
     <div class="features">
-      <p>🖱️ Tap into the thrill of earning cash with every click!</p>
-      <p>🛠️ Upgrade and customize your experience as you climb to wealth!</p>
-      <p>🏆 Challenge yourself: Design and share levels with friends and competitors worldwide.</p>
-      <p>📈 Track stats, rise to the top, and become the ultimate cursor master!</p>
+      <p>✨ Click your way to wealth in a thrilling adventure!</p>
+      <p>🛠️ Upgrade, customize, and conquer with each level.</p>
+      <p>🌐 Compete globally: Design and share levels to challenge friends.</p>
+      <p>📈 Track stats, rise to the top, and claim your place among the best!</p>
     </div>
-    <a href="https://course-cursor.onrender.com" class="play-button">Start Clicking</a>
+    <a href="https://course-cursor.onrender.com" class="play-button">Start Playing Now</a>
   </div>
 
   <script>
-    const numberOfFallingItems = 25; 
+    const numberOfFallingItems = 30; 
     const images = [
       'https://github.com/RENEGADE21CODING/Platicker-A_Platform_Clicker_Game/blob/main/ClickCursorCash.png?raw=true',
       'https://github.com/RENEGADE21CODING/Platicker-A_Platform_Clicker_Game/blob/main/CursorCoin.png?raw=true'
@@ -143,13 +143,11 @@
       img.src = images[Math.floor(Math.random() * images.length)];
       img.classList.add('falling-item');
 
-      // Set random size, position, opacity, brightness, and speeds for depth effect
       img.style.width = `${random(20, 60)}px`;
       img.style.left = `${random(0, 100)}vw`;
-      img.style.opacity = random(0.5, 1);
-      img.style.filter = `brightness(${random(0.5, 1.2)})`;
+      img.style.opacity = random(0.5, 0.9);
+      img.style.filter = `brightness(${random(0.6, 1.3)})`;
 
-      // Set random fall duration and rotation speed
       const fallDuration = random(7, 15);
       const rotationSpeed = random(5, 10);
       img.style.animation = `fall ${fallDuration}s linear infinite, 
