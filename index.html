@@ -56,8 +56,20 @@
       position: absolute;
       animation: fall linear infinite;
       will-change: transform, opacity;
-      width: 30px;  /* Random width */
-      height: auto; /* Height adjusts automatically */
+      width: 30px;
+      height: auto;
+      opacity: 0.8;
+      filter: brightness(1.5);
+    }
+
+    /* Fade-in Effect */
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
     }
 
     /* Main Container */
@@ -73,6 +85,7 @@
       font-weight: bold;
       text-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
       margin-bottom: 20px;
+      animation: fadeIn 1s ease-out forwards;
     }
 
     /* Features Section */
@@ -80,6 +93,7 @@
       font-size: 1.25em;
       line-height: 1.6;
       margin-bottom: 40px;
+      animation: fadeIn 2s ease-out forwards;
     }
 
     .features p {
@@ -106,6 +120,7 @@
       background-position: 0 50%;
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      animation: gradientAnimation 5s ease infinite;
     }
 
     .play-button:hover {
@@ -118,25 +133,20 @@
       0% {
         background-position: 0 50%;
       }
+      25% {
+        background-position: 50% 50%;
+      }
       50% {
         background-position: 100% 50%;
+      }
+      75% {
+        background-position: 150% 50%;
       }
       100% {
         background-position: 0 50%;
       }
     }
 
-    .play-button {
-      animation: gradientAnimation 5s ease infinite;
-    }
-
-    /* Animation for falling items */
-    .falling-item {
-      width: 30px;
-      height: auto;
-      opacity: 0.8;
-      filter: brightness(1.5);
-    }
   </style>
 </head>
 <body>
